@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTask AI Hub - Kanban Board</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h2>🚀 SmartTask AI Hub - Kanban Dashboard</h2>
+        <div class="nav">
+            <a href="index.html" class="active">Dashboard</a>
+            <a href="ai-generator.html">AI Generator</a>
+        </div>
+        <button class="btn-ai" onclick="triggerAIBreakdown()">✨ AI Auto-Breakdown (Mock)</button>
+    </div>
+
+    <div class="kanban-board">
+        <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>To Do</h3>
+            <div class="task-card" draggable="true" ondragstart="drag(event)" id="task1">
+                <h4>Phân tích Yêu cầu</h4>
+                <p>Khởi tạo tài liệu PRD cho Sprint 1</p>
+                <div class="tags">
+                    <span class="tag">Docs</span>
+                    <span class="tag tag-ai">AI Assisted</span>
+                </div>
+            </div>
+        </div>
+        <div class="column" id="in-progress" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>In Progress</h3>
+        </div>
+        <div class="column" id="review" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Review</h3>
+        </div>
+        <div class="column" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Done</h3>
+        </div>
+    </div>
+
+    <script src="./js/app.js"></script>
+</body>
+</html>
