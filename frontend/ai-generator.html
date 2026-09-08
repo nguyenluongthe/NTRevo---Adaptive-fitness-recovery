@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PRD & Story Generator - SmartTask AI Hub</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        .container { max-width: 800px; margin: 40px auto; background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);}
+        textarea { width: 100%; height: 140px; background: #334155; color: white; border: 1px solid #475569; padding: 15px; border-radius: 8px; margin-top: 15px; font-family: 'Inter', sans-serif; resize: vertical; box-sizing: border-box;}
+        textarea:focus { outline: none; border-color: #38bdf8; }
+        .btn-generate { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 16px; transition: background 0.2s;}
+        .btn-generate:hover { background: #2563eb; }
+        .result-box { margin-top: 30px; padding: 20px; background: #0f172a; border-radius: 8px; min-height: 250px; border: 1px dashed #475569; line-height: 1.6;}
+        .loading-text { color: #fbbf24; display: flex; align-items: center; gap: 10px;}
+        .success-text { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>✨ AI PRD & Story Generator</h2>
+        <div class="nav">
+            <a href="index.html">Dashboard</a>
+            <a href="ai-generator.html" class="active">AI Generator</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h3>Nhập ý tưởng sản phẩm / tính năng</h3>
+        <p style="color: #94a3b8;">Hệ thống AI sẽ tự động phân tích và tạo User Stories, Yêu cầu Tính năng (PRD) chi tiết cho bạn.</p>
+        
+        <textarea id="promptInput" placeholder="Ví dụ: Tôi muốn làm tính năng đăng nhập bằng Google và Facebook..."></textarea>
+        <button class="btn-generate" onclick="generateAI()">🚀 Phân tích bằng AI</button>
+
+        <div class="result-box" id="resultArea">
+            <em style="color: #64748b;">Kết quả phân tích sẽ hiển thị ở đây...</em>
+        </div>
+    </div>
+
+    <script>
+        function generateAI() {
+            const input = document.getElementById('promptInput').value;
+            if(!input.trim()) {
+                alert("Vui lòng nhập ý tưởng trước khi phân tích!");
+                return;
+            }
+
+            const resultArea = document.getElementById('resultArea');
+            resultArea.innerHTML = '<div class="loading-text">⏳ AI đang phân tích yêu cầu của bạn (Mô phỏng)...</div>';
+            
+            // Simulate AI delay
+            setTimeout(() => {
+                resultArea.innerHTML = `
+                    <h3 class="success-text">✅ Phân tích thành công!</h3>
+                    <h4>Epic: Quản lý Xác thực (Authentication)</h4>
+                    <ul style="color: #cbd5e1;">
+                        <li><strong>Story 1:</strong> As a user, I want to see a "Login with Google" button so that I can authenticate without a password.</li>
+                        <li><strong>Story 2:</strong> As a system admin, I want the system to store OAuth tokens securely.</li>
+                    </ul>
+                    <h4>Yêu cầu Phi chức năng (NFR)</h4>
+                    <p style="color: #cbd5e1;">- Thời gian phản hồi đăng nhập < 1 giây.<br>- Đảm bảo bảo mật theo chuẩn OAuth2.</p>
+                `;
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
