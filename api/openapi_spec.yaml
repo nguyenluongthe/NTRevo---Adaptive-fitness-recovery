@@ -1,0 +1,640 @@
+openapi: 3.0.3
+info:
+  title: NTRevo Adaptive Fitness & Recovery Platform API
+  description: >
+    Hệ thống API RESTful cung cấp dịch vụ đánh giá phục hồi sinh trắc học cá nhân hóa,
+    tính toán điểm sẵn sàng (Readiness Score), điều chỉnh bài tập thích ứng và cảnh báo nguy cơ chấn thương.
+  version: 1.0.0
+  contact:
+    name: NTRevo Engineering Team
+    email: api-support@ntrevo.io
+servers:
+  - url: https://api.ntrevo.io/api/v1
+    description: Production Server
+  - url: http://localhost:8000/api/v1
+    description: Local Development & Mock Server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Authentication
+    description: Đăng ký, đăng nhập và xác thực JWT token
+  - name: User Profile
+    description: Quản lý thông tin hồ sơ thể lực và nhân trắc học
+  - name: Biometrics
+    description: Ghi nhận chỉ số giấc ngủ, nhịp tim nghỉ và biến thiên nhịp tim HRV
+  - name: AI Recovery Engine
+    description: Thuật toán tính điểm sẵn sàng và kê đơn phục hồi thích nghi
+  - name: Workouts
+    description: Quản lý lịch tập, ghi nhận tải lượng (weight, reps, RPE) theo thời gian thực
+  - name: Analytics & Prevention
+    description: Báo cáo xu hướng HRV 7 ngày và cảnh báo chỉ số nguy cơ quá tải (ACWR)
+
+paths:
+  # -------------------------------------------------------------
+  # AUTHENTICATION
+  # -------------------------------------------------------------
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Đăng ký tài khoản vận động viên mới
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Email đã tồn tại hoặc mật khẩu không hợp lệ
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Đăng nhập lấy JWT Access Token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Sai thông tin email hoặc mật khẩu
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Lấy thông tin tài khoản hiện tại từ Token
+      responses:
+        '200':
+          description: Thông tin người dùng hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: Token không hợp lệ hoặc đã hết hạn
+
+  # -------------------------------------------------------------
+  # USER PROFILE
+  # -------------------------------------------------------------
+  /users/profile:
+    get:
+      tags: [User Profile]
+      summary: Lấy hồ sơ thể lực chi tiết của vận động viên
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+    put:
+      tags: [User Profile]
+      summary: Cập nhật cân nặng, chiều cao, mục tiêu tập luyện
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Cập nhật hồ sơ thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+
+  # -------------------------------------------------------------
+  # BIOMETRICS
+  # -------------------------------------------------------------
+  /biometrics/morning-checkin:
+    post:
+      tags: [Biometrics]
+      summary: Gửi dữ liệu sinh trắc học buổi sáng (Ngủ, RHR, HRV)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MorningCheckinRequest'
+      responses:
+        '201':
+          description: Lưu chỉ số thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BiometricLogDTO'
+        '422':
+          description: Dữ liệu đo ngoài ngưỡng sinh học bình thường
+
+  /biometrics/latest:
+    get:
+      tags: [Biometrics]
+      summary: Lấy bản ghi chỉ số sinh học gần nhất
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BiometricLogDTO'
+
+  /biometrics/history:
+    get:
+      tags: [Biometrics]
+      summary: Lấy lịch sử đo sinh học trong N ngày
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 7
+          description: Số ngày cần truy vấn
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BiometricLogDTO'
+
+  # -------------------------------------------------------------
+  # AI RECOVERY ENGINE
+  # -------------------------------------------------------------
+  /recovery/calculate-readiness:
+    post:
+      tags: [AI Recovery Engine]
+      summary: Kích hoạt thuật toán AI tính toán Điểm Sẵn sàng (Readiness Score)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateReadinessRequest'
+      responses:
+        '200':
+          description: Tính toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessScoreDTO'
+
+  /recovery/prescription/today:
+    get:
+      tags: [AI Recovery Engine]
+      summary: Lấy đơn thuốc luyện tập & phục hồi thích ứng trong ngày
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecoveryPrescriptionDTO'
+
+  /recovery/doms-map:
+    post:
+      tags: [AI Recovery Engine]
+      summary: Lưu bản đồ vị trí các nhóm cơ đau mỏi sau tập
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DomsMapRequest'
+      responses:
+        '200':
+          description: Ghi nhận bản đồ cơ đau mỏi thành công
+
+  # -------------------------------------------------------------
+  # WORKOUTS
+  # -------------------------------------------------------------
+  /workouts/today:
+    get:
+      tags: [Workouts]
+      summary: Lấy giáo án tập luyện ngày hôm nay (kèm điều chỉnh thích ứng)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutPlanDTO'
+
+  /workouts/start:
+    post:
+      tags: [Workouts]
+      summary: Bắt đầu một buổi tập luyện trực tiếp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [workout_plan_id]
+              properties:
+                workout_plan_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Buổi tập đã bắt đầu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveSessionDTO'
+
+  /workouts/{id}/log-set:
+    post:
+      tags: [Workouts]
+      summary: Ghi nhận kết quả thực hiện của 1 hiệp tập (Set)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseSetRequest'
+      responses:
+        '200':
+          description: Ghi nhận hiệp tập thành công
+
+  /workouts/{id}/complete:
+    post:
+      tags: [Workouts]
+      summary: Kết thúc buổi tập và tính toán tổng tải lượng (Training Load)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Tổng kết buổi tập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkoutSummaryDTO'
+
+  # -------------------------------------------------------------
+  # ANALYTICS & PREVENTION
+  # -------------------------------------------------------------
+  /analytics/hrv-trend:
+    get:
+      tags: [Analytics & Prevention]
+      summary: Lấy chuỗi dữ liệu xu hướng biến thiên nhịp tim HRV 7-30 ngày
+      parameters:
+        - name: range_days
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HrvTrendResponse'
+
+  /analytics/acwr-overtraining-risk:
+    get:
+      tags: [Analytics & Prevention]
+      summary: Đánh giá tỷ lệ tải lượng cấp tính/mạn tính (ACWR) và nguy cơ chấn thương
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcwrRiskDTO'
+
+# -------------------------------------------------------------
+# COMPONENTS & SCHEMAS
+# -------------------------------------------------------------
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, full_name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: athlete.alex@ntrevo.io
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: StrongPass@2026
+        full_name:
+          type: string
+          example: Alex Nguyen
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: athlete.alex@ntrevo.io
+        password:
+          type: string
+          example: StrongPass@2026
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          example: bearer
+        expires_in:
+          type: integer
+          example: 86400
+        user:
+          $ref: '#/components/schemas/UserDTO'
+
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        full_name:
+          type: string
+        role:
+          type: string
+          enum: [athlete, coach, admin]
+
+    UserProfileDTO:
+      type: object
+      properties:
+        weight_kg:
+          type: number
+          example: 74.5
+        height_cm:
+          type: number
+          example: 178.0
+        primary_goal:
+          type: string
+          enum: [hypertrophy, strength, endurance, recovery]
+        training_years:
+          type: integer
+          example: 3
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        weight_kg:
+          type: number
+        height_cm:
+          type: number
+        primary_goal:
+          type: string
+
+    MorningCheckinRequest:
+      type: object
+      required: [sleep_hours, resting_heart_rate, hrv_rmssd]
+      properties:
+        sleep_hours:
+          type: number
+          minimum: 2
+          maximum: 14
+          example: 7.5
+        resting_heart_rate:
+          type: integer
+          minimum: 35
+          maximum: 120
+          example: 58
+        hrv_rmssd:
+          type: number
+          minimum: 10
+          maximum: 200
+          example: 72.4
+        stress_level:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 3
+
+    BiometricLogDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        recorded_at:
+          type: string
+          format: date-time
+        sleep_hours:
+          type: number
+        resting_heart_rate:
+          type: integer
+        hrv_rmssd:
+          type: number
+        stress_level:
+          type: integer
+
+    CalculateReadinessRequest:
+      type: object
+      properties:
+        biometric_log_id:
+          type: string
+          format: uuid
+        doms_muscle_ids:
+          type: array
+          items:
+            type: string
+
+    ReadinessScoreDTO:
+      type: object
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 78
+        category:
+          type: string
+          enum: [OPTIMAL_STRAIN, MODERATE_RECOVERY, OVERTRAINING_RISK, COMPLETE_REST]
+          example: OPTIMAL_STRAIN
+        hrv_recovery_pct:
+          type: number
+          example: 92.5
+        recommendation_summary:
+          type: string
+          example: Hệ thần kinh tự chủ phục hồi tốt, cho phép nâng tạ với cường độ tối ưu.
+
+    RecoveryPrescriptionDTO:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        readiness_score:
+          type: integer
+          example: 78
+        suggested_workout_mode:
+          type: string
+          example: MODIFIED_VOLUME_75PCT
+        warmup_drills:
+          type: array
+          items:
+            type: string
+          example: ["10 min Foam Rolling Quadriceps", "3x30s Couch Stretch"]
+        hydration_goal_liters:
+          type: number
+          example: 3.2
+
+    DomsMapRequest:
+      type: object
+      properties:
+        sore_muscles:
+          type: array
+          items:
+            type: object
+            required: [muscle_group, pain_level]
+            properties:
+              muscle_group:
+                type: string
+                example: quadriceps
+              pain_level:
+                type: integer
+                minimum: 1
+                maximum: 10
+                example: 7
+
+    WorkoutPlanDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Upper Body Hypertrophy (Adapted)
+        is_modified_by_ai:
+          type: boolean
+          example: true
+        target_rpe_max:
+          type: number
+          example: 7.5
+
+    ActiveSessionDTO:
+      type: object
+      properties:
+        session_id:
+          type: string
+          format: uuid
+        started_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          example: in_progress
+
+    ExerciseSetRequest:
+      type: object
+      required: [exercise_name, set_number, weight_kg, reps]
+      properties:
+        exercise_name:
+          type: string
+          example: Dumbbell Incline Press
+        set_number:
+          type: integer
+          example: 1
+        weight_kg:
+          type: number
+          example: 32.5
+        reps:
+          type: integer
+          example: 10
+        rpe:
+          type: number
+          example: 8.0
+
+    WorkoutSummaryDTO:
+      type: object
+      properties:
+        session_id:
+          type: string
+        total_duration_minutes:
+          type: integer
+          example: 54
+        total_volume_kg:
+          type: number
+          example: 8450
+        average_rpe:
+          type: number
+          example: 7.8
+        strain_index:
+          type: number
+          example: 14.2
+
+    HrvTrendResponse:
+      type: object
+      properties:
+        data_points:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              hrv_rmssd:
+                type: number
+              rhr:
+                type: integer
+        seven_day_baseline_hrv:
+          type: number
+          example: 68.5
+
+    AcwrRiskDTO:
+      type: object
+      properties:
+        acute_workload_7d:
+          type: number
+          example: 2450.0
+        chronic_workload_28d:
+          type: number
+          example: 1980.0
+        acwr_ratio:
+          type: number
+          example: 1.24
+        risk_level:
+          type: string
+          enum: [SAFE_ZONE, WARNING_ZONE, DANGER_INJURY_RISK]
+          example: SAFE_ZONE
