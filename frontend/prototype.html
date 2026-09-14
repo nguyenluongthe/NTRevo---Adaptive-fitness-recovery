@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTRevo - Prototype Đánh giá Thể lực & Hồi phục Thích ứng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #09090B;
+            --bg-card: #18181B;
+            --bg-card-elevated: rgba(24, 24, 27, 0.75);
+            --border-color: #27272A;
+            --border-focus: #FF4500;
+            --text-primary: #FFFFFF;
+            --text-secondary: #F4F4F5;
+            --text-muted: #A1A1AA;
+            --accent-orange: #FF4500;
+            --accent-orange-glow: rgba(255, 69, 0, 0.25);
+            --status-success: #10B981;
+            --status-warning: #F59E0B;
+            --status-danger: #EF4444;
+            --status-info: #0EA5E9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 69, 0, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(14, 165, 233, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(9, 9, 11, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: var(--accent-orange);
+        }
+
+        .badge-sprint {
+            font-size: 11px;
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        nav {
+            display: flex;
+            gap: 12px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 868px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--bg-card-elevated);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.2s;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 69, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-title .icon {
+            font-size: 20px;
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-group .value-badge {
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            accent-color: var(--accent-orange);
+        }
+
+        .metric-input {
+            width: 100%;
+            background: #121214;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .metric-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-orange-glow);
+        }
+
+        /* Muscle Group Tag Selector */
+        .muscle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .muscle-btn {
+            background: #121214;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .muscle-btn:hover {
+            border-color: var(--text-muted);
+            background: #1c1c20;
+        }
+
+        .muscle-btn.active {
+            background: rgba(255, 69, 0, 0.15);
+            border-color: var(--accent-orange);
+            color: var(--text-primary);
+        }
+
+        .muscle-btn .pain-tag {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .muscle-btn.active .pain-tag {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        /* CTA Button */
+        .btn-cta {
+            width: 100%;
+            background: var(--accent-orange);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            box-shadow: 0 4px 14px rgba(255, 69, 0, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-cta:hover {
+            background: #e03d00;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.45);
+        }
+
+        /* Output Prescription Area */
+        .score-meter-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: #121214;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            border: 4px solid var(--status-success);
+            color: var(--text-primary);
+            flex-shrink: 0;
+            background: rgba(16, 185, 129, 0.1);
+            transition: all 0.5s;
+        }
+
+        .score-circle.warning {
+            border-color: var(--status-warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .score-circle.danger {
+            border-color: var(--status-danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .score-circle span {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .score-info h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .score-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .prescription-item {
+            padding: 14px;
+            border-radius: 8px;
+            background: #141416;
+            border-left: 4px solid var(--accent-orange);
+            margin-bottom: 12px;
+        }
+
+        .prescription-item h4 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prescription-item p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="brand">
+                NT<span>Revo</span>
+                <span class="badge-sprint">Chương 4: Prototype UI</span>
+            </a>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html" class="active">Prototype (W2)</a>
+                <a href="swagger.html">OpenAPI (W3)</a>
+                <a href="workout-tracker.html">Tracker (W4)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h1>Đánh giá Thể lực & Khuyến nghị Phục hồi Thích ứng</h1>
+            <p>Bản mẫu tương tác chuẩn WCAG 2.1 AA với hiệu ứng Glassmorphism trên nền Elevated Dark (#18181B).</p>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Column: Input Check-in -->
+            <div class="glass-card">
+                <div class="card-title">
+                    <span class="icon">🌅</span>
+                    <span>1. Đo Chỉ số Sinh học Buổi sáng</span>
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        <span>Thời lượng giấc ngủ (Giờ)</span>
+                        <span class="value-badge" id="sleepVal">7.5h</span>
+                    </label>
+                    <input type="range" id="sleepInput" min="4" max="10" step="0.5" value="7.5" oninput="updateSleep(this.value)">
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        <span>Nhịp tim nghỉ ngơi RHR (bpm)</span>
+                    </label>
+                    <input type="number" id="rhrInput" class="metric-input" value="58" placeholder="50 - 90 bpm">
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        <span>Độ biến thiên nhịp tim HRV (ms)</span>
+                    </label>
+                    <input type="number" id="hrvInput" class="metric-input" value="72" placeholder="40 - 100 ms">
+                </div>
+
+                <div class="card-title" style="margin-top: 24px; margin-bottom: 12px;">
+                    <span class="icon">📍</span>
+                    <span>2. Bản đồ Cơ Đau mỏi (DOMS Muscle Map)</span>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                    Chạm chọn các nhóm cơ căng mỏi sau buổi tập hôm trước:
+                </p>
+
+                <div class="muscle-grid">
+                    <button class="muscle-btn active" onclick="toggleMuscle(this, 'Đùi trước (Quads)', 7)">
+                        <span>Đùi trước (Quads)</span>
+                        <span class="pain-tag">Đau 7/10</span>
+                    </button>
+                    <button class="muscle-btn" onclick="toggleMuscle(this, 'Lưng dưới (Lower Back)', 5)">
+                        <span>Lưng dưới</span>
+                        <span class="pain-tag">0/10</span>
+                    </button>
+                    <button class="muscle-btn" onclick="toggleMuscle(this, 'Vai & Cầu vai', 4)">
+                        <span>Vai & Deltoids</span>
+                        <span class="pain-tag">0/10</span>
+                    </button>
+                    <button class="muscle-btn" onclick="toggleMuscle(this, 'Gân kheo (Hamstrings)', 6)">
+                        <span>Gân kheo (Hamstring)</span>
+                        <span class="pain-tag">0/10</span>
+                    </button>
+                </div>
+
+                <button class="btn-cta" id="evalBtn" onclick="evaluateAdaptiveRecovery()">
+                    <span>🧠 Phân tích & Lập Kế hoạch Thích ứng</span>
+                </button>
+            </div>
+
+            <!-- Right Column: AI Output Prescription -->
+            <div class="glass-card">
+                <div class="card-title">
+                    <span class="icon">⚡</span>
+                    <span>Kết quả Phân tích AI Recovery Engine</span>
+                </div>
+
+                <div class="score-meter-container">
+                    <div class="score-circle" id="scoreCircle">
+                        <span id="scoreNumber">78</span>
+                        <span>Điểm</span>
+                    </div>
+                    <div class="score-info">
+                        <h3 id="scoreStatus">Sẵn sàng Tập luyện (Optimal Strain)</h3>
+                        <p id="scoreSub">Hệ thần kinh tự chủ phục hồi 88%. Nhóm cơ đùi trước cần lưu ý điều chỉnh khối lượng.</p>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 15px; color: var(--text-primary); margin-bottom: 12px;">
+                    📋 Đơn thuốc Huấn luyện Cá nhân hóa hôm nay:
+                </h4>
+
+                <div id="prescriptionList">
+                    <div class="prescription-item">
+                        <h4>🏋️ Điều chỉnh Bài tập (Modified Workout)</h4>
+                        <p>Hạ 25% Volume bài Squat sang Leg Press cô lập. Giới hạn RPE $\le$ 7.5 để bảo vệ khớp gối và mô cơ đùi.</p>
+                    </div>
+                    <div class="prescription-item" style="border-left-color: var(--status-info);">
+                        <h4>🧘 Giao thức Phục hồi Chủ động (15 Phút)</h4>
+                        <p>Lăn ống bọt Foam Rolling cho dải chậu chày (IT Band) và đùi trước. Thực hiện 3 hiệp giãn cơ tĩnh 45s.</p>
+                    </div>
+                    <div class="prescription-item" style="border-left-color: var(--status-success);">
+                        <h4>💧 Dinh dưỡng & Thủy hợp Gợi ý</h4>
+                        <p>Bổ sung 500ml nước điện giải giàu Magie trước 21h để tối ưu hóa pha ngủ sâu (Deep Sleep).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function updateSleep(val) {
+            document.getElementById('sleepVal').innerText = val + 'h';
+        }
+
+        function toggleMuscle(el, name, defaultPain) {
+            el.classList.toggle('active');
+            const tag = el.querySelector('.pain-tag');
+            if (el.classList.contains('active')) {
+                tag.innerText = `Đau ${defaultPain}/10`;
+            } else {
+                tag.innerText = '0/10';
+            }
+        }
+
+        function evaluateAdaptiveRecovery() {
+            const btn = document.getElementById('evalBtn');
+            const sleep = parseFloat(document.getElementById('sleepInput').value);
+            const rhr = parseInt(document.getElementById('rhrInput').value) || 60;
+            const hrv = parseInt(document.getElementById('hrvInput').value) || 70;
+            
+            const activeMuscles = document.querySelectorAll('.muscle-btn.active');
+            
+            btn.innerHTML = '<div class="loading-spinner"></div> AI đang phân tích dữ liệu đa biến...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<span>🧠 Phân tích & Lập Kế hoạch Thích ứng</span>';
+                btn.disabled = false;
+
+                // Simple formula simulating AI Core calculation
+                // Base 100, penalized by high RHR, low HRV, low sleep, and active pain
+                let score = 100;
+                if (sleep < 6) score -= 25;
+                else if (sleep < 7) score -= 10;
+
+                if (rhr > 75) score -= 20;
+                else if (rhr > 65) score -= 10;
+
+                if (hrv < 50) score -= 25;
+                else if (hrv < 65) score -= 10;
+
+                score -= (activeMuscles.length * 8);
+                if (score < 20) score = 20;
+                if (score > 98) score = 98;
+
+                const circle = document.getElementById('scoreCircle');
+                const scoreNum = document.getElementById('scoreNumber');
+                const status = document.getElementById('scoreStatus');
+                const sub = document.getElementById('scoreSub');
+                const list = document.getElementById('prescriptionList');
+
+                scoreNum.innerText = score;
+                circle.classList.remove('warning', 'danger');
+
+                if (score >= 75) {
+                    status.innerText = "Sẵn sàng Tập luyện (Optimal Strain)";
+                    sub.innerText = "Hệ thần kinh tự chủ phục hồi tốt. Tiếp tục lộ trình nâng tạ theo giáo án chuẩn.";
+                    list.innerHTML = `
+                        <div class="prescription-item">
+                            <h4>🏋️ Buổi tập Đề xuất: Cường độ Cao (High Strain)</h4>
+                            <p>Bạn đủ điều kiện thể lực để chinh phục các mốc tạ nặng (RPE 8.5 - 9.0).</p>
+                        </div>
+                        <div class="prescription-item" style="border-left-color: var(--status-success);">
+                            <h4>⚡ Khởi động Động (Dynamic Warm-up)</h4>
+                            <p>5 phút xoay khớp toàn diện và kích hoạt nhóm cơ cốt lõi (Core Activation).</p>
+                        </div>
+                    `;
+                } else if (score >= 50) {
+                    circle.classList.add('warning');
+                    status.innerText = "Phục hồi Trung bình (Moderate Recovery)";
+                    sub.innerText = "Mức năng lượng ở ngưỡng vừa. Đề xuất giảm tải và tập trung kỹ thuật.";
+                    list.innerHTML = `
+                        <div class="prescription-item" style="border-left-color: var(--status-warning);">
+                            <h4>⚡ Giáo án Điều chỉnh (Modified Volume -20%)</h4>
+                            <p>Giảm 1 set ở các bài Compound nặng. Tăng thời gian nghỉ giữa set thêm 45 giây.</p>
+                        </div>
+                        <div class="prescription-item" style="border-left-color: var(--status-info);">
+                            <h4>🧘 Hồi phục Chủ động (Active Recovery)</h4>
+                            <p>Thực hiện 15 phút giãn cơ foam rolling cho các nhóm cơ đang mỏi.</p>
+                        </div>
+                    `;
+                } else {
+                    circle.classList.add('danger');
+                    status.innerText = "Cảnh báo Quá tải (Overtraining Alert)";
+                    sub.innerText = "Chỉ số HRV giảm mạnh kèm thiếu ngủ. Kích hoạt giao thức nghỉ ngơi cưỡng bức.";
+                    list.innerHTML = `
+                        <div class="prescription-item" style="border-left-color: var(--status-danger);">
+                            <h4>🛑 Nghỉ ngơi Toàn diện (Complete Rest Day)</h4>
+                            <p>Khóa các bài tập tạ nặng trong 24 giờ tới. Nguy cơ rách cơ hoặc đau khớp cao.</p>
+                        </div>
+                        <div class="prescription-item" style="border-left-color: var(--status-info);">
+                            <h4>🌊 Thư giãn & Giảm Stress</h4>
+                            <p>Đi bộ nhẹ nhàng 20 phút ở công viên, tắm nước ấm và ngủ trước 22h00.</p>
+                        </div>
+                    `;
+                }
+            }, 600);
+        }
+    </script>
+</body>
+</html>
