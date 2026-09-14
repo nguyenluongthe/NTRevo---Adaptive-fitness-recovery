@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTRevo - Hợp đồng API OpenAPI 3.0 & Swagger UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    <style>
+        :root {
+            --bg-base: #09090B;
+            --bg-card: #18181B;
+            --border-color: #27272A;
+            --accent-orange: #FF4500;
+            --text-primary: #FFFFFF;
+            --text-muted: #A1A1AA;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-base);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #F4F4F5;
+        }
+
+        header {
+            background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .brand span { color: var(--accent-orange); }
+
+        .badge-sprint {
+            font-size: 11px;
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        nav { display: flex; gap: 12px; }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .swagger-banner {
+            max-width: 1400px;
+            margin: 24px auto 0 auto;
+            padding: 0 24px;
+        }
+
+        .banner-box {
+            background: #18181B;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .banner-box h2 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .banner-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .download-btn {
+            background: var(--accent-orange);
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Swagger UI Dark Mode Adaptations */
+        #swagger-ui {
+            max-width: 1400px;
+            margin: 20px auto 40px auto;
+            padding: 0 20px;
+        }
+        .swagger-ui {
+            filter: invert(88%) hue-rotate(180deg);
+        }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .info { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="brand">
+                NT<span>Revo</span>
+                <span class="badge-sprint">Chương 5: OpenAPI 3.0</span>
+            </a>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html">Prototype (W2)</a>
+                <a href="swagger.html" class="active">OpenAPI (W3)</a>
+                <a href="workout-tracker.html">Tracker (W4)</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="swagger-banner">
+        <div class="banner-box">
+            <div>
+                <h2>Hợp đồng API OpenAPI 3.0 - NTRevo Adaptive Recovery System</h2>
+                <p>Bao phủ hơn 17 endpoints: Xác thực Auth, Sinh trắc học, AI Recovery Engine, Kế hoạch tập thích ứng & Cảnh báo chấn thương.</p>
+            </div>
+            <a href="../api/openapi_spec.yaml" class="download-btn" download>
+                📥 Tải file openapi_spec.yaml
+            </a>
+        </div>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+    <script>
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                url: "../api/openapi_spec.yaml",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                layout: "BaseLayout"
+            });
+        };
+    </script>
+</body>
+</html>
