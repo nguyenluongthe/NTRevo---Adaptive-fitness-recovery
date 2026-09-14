@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTRevo - Theo dõi Buổi tập & Biểu đồ HRV Sinh học</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #09090B;
+            --bg-card: #18181B;
+            --bg-card-elevated: rgba(24, 24, 27, 0.85);
+            --border-color: #27272A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #F4F4F5;
+            --text-muted: #A1A1AA;
+            --accent-orange: #FF4500;
+            --accent-orange-glow: rgba(255, 69, 0, 0.25);
+            --status-success: #10B981;
+            --status-warning: #F59E0B;
+            --status-info: #0EA5E9;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 24px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 20px;
+        }
+        .brand span { color: var(--accent-orange); }
+
+        .badge-sprint {
+            font-size: 11px;
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        nav { display: flex; gap: 12px; }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 20px 60px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-strip { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .stat-card {
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .stat-card .sub {
+            font-size: 12px;
+            color: var(--status-success);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Two columns */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-tag {
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Set Logger Form */
+        .set-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: flex-end;
+            background: #121214;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 650px) {
+            .set-form { grid-template-columns: 1fr 1fr; }
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #18181B;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .btn-add-set {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-add-set:hover {
+            background: #e03d00;
+        }
+
+        /* Sets Table */
+        .sets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .sets-table th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sets-table td {
+            padding: 12px;
+            border-bottom: 1px solid #202024;
+            color: var(--text-secondary);
+        }
+
+        .btn-delete-set {
+            background: transparent;
+            border: none;
+            color: #71717A;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .btn-delete-set:hover { color: #EF4444; }
+
+        /* Chart Canvas Containers */
+        .chart-container {
+            width: 100%;
+            height: 220px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="brand">
+                NT<span>Revo</span>
+                <span class="badge-sprint">Chương 6: Reactive Tracker</span>
+            </a>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html">Prototype (W2)</a>
+                <a href="swagger.html">OpenAPI (W3)</a>
+                <a href="workout-tracker.html" class="active">Tracker (W4)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <div>
+                <h1>Theo dõi Buổi tập & Phục hồi Sinh học Thời gian thực</h1>
+                <p>Kết nối Reactive State Store (`store.js`), Trực quan hóa Canvas (`chart_engine.js`) và API Interceptors (`api_client.js`).</p>
+            </div>
+        </div>
+
+        <!-- Top Metrics Strip -->
+        <div class="stats-strip">
+            <div class="stat-card">
+                <div class="label">Tổng khối lượng (Volume)</div>
+                <div class="value" id="totalVolumeVal">0 kg</div>
+                <div class="sub">Tích lũy buổi tập</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Số Hiệp hoàn thành</div>
+                <div class="value" id="totalSetsVal">0 sets</div>
+                <div class="sub">RPE trung bình: <span id="avgRpeVal">0.0</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Điểm Sẵn sàng (Readiness)</div>
+                <div class="value" style="color: var(--status-success);" id="readinessVal">78/100</div>
+                <div class="sub">Optimal Strain</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Độ biến thiên HRV hôm nay</div>
+                <div class="value" id="hrvTodayVal">72 ms</div>
+                <div class="sub">Cao hơn cơ sở +4ms</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Two Columns -->
+        <div class="dashboard-grid">
+            <!-- Left Column: Active Workout Logging -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>🏋️ Buổi tập: Upper Body Hypertrophy</span>
+                            <span class="ai-tag">✨ AI Adapted (-15% Volume)</span>
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <div class="set-form">
+                        <div class="form-group">
+                            <label>Bài tập (Exercise)</label>
+                            <select id="exerciseSelect" class="form-control">
+                                <option value="Dumbbell Incline Bench Press">Dumbbell Incline Bench Press</option>
+                                <option value="Chest Supported Dumbbell Row">Chest Supported Dumbbell Row</option>
+                                <option value="Cable Lateral Raise">Cable Lateral Raise</option>
+                                <option value="Overhead Tricep Extension">Overhead Tricep Extension</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mức tạ (kg)</label>
+                            <input type="number" id="weightInput" class="form-control" value="32" step="0.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Số Reps</label>
+                            <input type="number" id="repsInput" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>RPE (1-10)</label>
+                            <input type="number" id="rpeInput" class="form-control" value="8.0" step="0.5" min="1" max="10">
+                        </div>
+                        <button class="btn-add-set" onclick="handleLogSet()">+ Lưu Set</button>
+                    </div>
+
+                    <!-- Logged Sets Table -->
+                    <table class="sets-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Bài tập</th>
+                                <th>Khối lượng</th>
+                                <th>Số Reps</th>
+                                <th>RPE</th>
+                                <th>Tải lượng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="setsTableBody">
+                            <!-- Populated dynamically by store.js subscriber -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column: Visual Biometric Charts -->
+            <div>
+                <!-- HRV Trend Chart Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>📈 Xu hướng Biến thiên Nhịp tim (HRV 7 Ngày)</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="hrvCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Training Load Bar Chart Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>📊 Tải lượng Huấn luyện Tuần (Training Load kg)</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="loadCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Load Client Scripts in Logical Order -->
+    <script src="./js/api_client.js"></script>
+    <script src="./js/chart_engine.js"></script>
+    <script src="./js/store.js"></script>
+
+    <script>
+        // Init and bind reactive listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Subscribe to exerciseSets changes
+            window.ntrevoStore.subscribe('exerciseSets', (sets) => {
+                renderSetsTable(sets);
+                updateVolumeStats();
+            });
+
+            // Subscribe to readiness
+            window.ntrevoStore.subscribe('readiness', (r) => {
+                document.getElementById('readinessVal').innerText = `${r.score}/100`;
+            });
+
+            // Render Charts
+            renderCharts();
+            window.addEventListener('resize', renderCharts);
+        });
+
+        function renderSetsTable(sets) {
+            const tbody = document.getElementById('setsTableBody');
+            tbody.innerHTML = '';
+
+            sets.forEach((s, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${idx + 1}</strong></td>
+                    <td>${s.exercise}</td>
+                    <td>${s.weightKg} kg</td>
+                    <td>${s.reps}</td>
+                    <td><span style="color: ${s.rpe >= 8.5 ? '#EF4444' : '#10B981'}; font-weight: 700;">${s.rpe}</span></td>
+                    <td>${s.weightKg * s.reps} kg</td>
+                    <td><button class="btn-delete-set" onclick="handleDeleteSet(${s.id})" title="Xóa">✕</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateVolumeStats() {
+            const vol = window.ntrevoStore.getTotalVolumeKg();
+            const avgRpe = window.ntrevoStore.getAverageRpe();
+            const totalSets = window.ntrevoStore.get('exerciseSets').length;
+
+            document.getElementById('totalVolumeVal').innerText = `${vol.toLocaleString()} kg`;
+            document.getElementById('totalSetsVal').innerText = `${totalSets} sets`;
+            document.getElementById('avgRpeVal').innerText = avgRpe;
+        }
+
+        function handleLogSet() {
+            const exercise = document.getElementById('exerciseSelect').value;
+            const weight = document.getElementById('weightInput').value;
+            const reps = document.getElementById('repsInput').value;
+            const rpe = document.getElementById('rpeInput').value;
+
+            window.ntrevoStore.addExerciseSet(exercise, weight, reps, rpe);
+        }
+
+        function handleDeleteSet(id) {
+            window.ntrevoStore.removeExerciseSet(id);
+        }
+
+        function renderCharts() {
+            const hrvCanvas = document.getElementById('hrvCanvas');
+            const loadCanvas = document.getElementById('loadCanvas');
+            const history = window.ntrevoStore.get('hrvHistory7d');
+
+            if (window.biometricChartEngine) {
+                window.biometricChartEngine.renderHrvTrend(hrvCanvas, history, 68);
+                window.biometricChartEngine.renderTrainingLoad(loadCanvas, history);
+            }
+        }
+    </script>
+</body>
+</html>
