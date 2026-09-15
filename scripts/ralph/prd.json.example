@@ -1,0 +1,45 @@
+{
+  "project": "NTRevo",
+  "branchName": "ralph/sample-feature",
+  "description": "Sample Feature - Structured execution for autonomous coding agents",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Database model and migration",
+      "description": "As a developer, I need to store data so it persists across sessions.",
+      "acceptanceCriteria": [
+        "Create database schema or models",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "API endpoint implementation",
+      "description": "As a client, I want an API endpoint to retrieve and manipulate data.",
+      "acceptanceCriteria": [
+        "Endpoint created and tested",
+        "Typecheck passes",
+        "Tests pass"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Frontend UI component",
+      "description": "As a user, I want a clear interface to interact with the feature.",
+      "acceptanceCriteria": [
+        "Component rendered and responsive",
+        "Typecheck passes",
+        "Verify in browser"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

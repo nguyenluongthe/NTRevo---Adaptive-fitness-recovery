@@ -1,0 +1,28 @@
+# Ralph Progress Log
+Project: NTRevo - Adaptive Fitness Recovery MVP
+Branch: ralph/adaptive-fitness-recovery
+Started: 2026-09-15
+
+## Codebase Patterns
+- Data Models & Validation: Located in `frontend/js/models.js` with functional factories throwing explicit Vietnamese validation messages.
+- Storage Layer: Located in `frontend/js/storage.js` (`NTRevoStorage`), handles local persistence with in-memory fallback for headless Node testing.
+- Testing: Automated tests run with Node test runner (`node --test tests/*.test.js`).
+
+## Story Execution History
+
+## 2026-09-15 - US-001: Data models and storage schema for biometrics and recovery logs
+- What was implemented:
+  - Created `BiometricsLog`, `DomsLog`, and `ReadinessResult` data schemas with validation constraints.
+  - Implemented `NTRevoStorage` class with operations: save/load biometrics, DOMS, readiness results, history retrieval, and consecutive danger detection.
+  - Created test suite `tests/storage.test.js` with 4 comprehensive test cases covering models, boundaries, and persistence.
+- Files changed:
+  - `frontend/js/models.js`
+  - `frontend/js/storage.js`
+  - `tests/storage.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: `NTRevoStorage` uses date-based (`YYYY-MM-DD`) upserting so that updating morning biometrics on the same day replaces stale input cleanly.
+  - Gotchas encountered: `localStorage` is not available in Node.js test environment; using a clean `MemoryStorage` fallback allows fast headless test runs.
+  - Useful context: `checkConsecutiveDangerReadiness` is already provided and verified in the storage layer for story US-006.
+---
