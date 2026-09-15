@@ -1,58 +1,48 @@
-// Drag & Drop Logic for Kanban Board
-function allowDrop(ev) {
-    ev.preventDefault();
-}
+/**
+ * @file app.js
+ * @description Main application entry point for NTRevo.
+ */
 
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-    setTimeout(() => { ev.target.style.opacity = '0.4'; }, 0);
-}
+import { BiometricsCheckinForm } from './checkin.js';
+import { storage } from './storage.js';
 
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    var draggedElement = document.getElementById(data);
-    draggedElement.style.opacity = '1';
-    
-    // Allow dropping on the column directly or on a card within the column
-    let targetColumn = ev.target;
-    if(!targetColumn.classList.contains('column')) {
-        targetColumn = targetColumn.closest('.column');
-    }
-    
-    if(targetColumn && targetColumn.classList.contains('column')) {
-        targetColumn.appendChild(draggedElement);
-        console.log(`[Action] Moved task "${data}" to column "${targetColumn.id}"`);
-    }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('⚡ NTRevo - Adaptive Fitness Recovery App Initializing...');
 
-// Add event listeners for end drag to restore opacity
-document.addEventListener('dragend', (ev) => {
-    if(ev.target.classList.contains('task-card')) {
-        ev.target.style.opacity = '1';
+    // Initialize Morning Biometrics Checkin Form (FR-01 / US-002)
+    const checkinForm = new BiometricsCheckinForm({
+        formElement: document.getElementById('biometrics-form'),
+        sleepSlider: document.getElementById('sleep-slider'),
+        sleepValLabel: document.getElementById('sleep-val-label'),
+        starsContainer: document.getElementById('stars-container'),
+        rhrInput: document.getElementById('rhr-input'),
+        stressSelect: document.getElementById('stress-select'),
+        dateInput: document.getElementById('date-input'),
+        errorAlert: document.getElementById('error-alert'),
+        successAlert: document.getElementById('success-alert'),
+        summaryCard: document.getElementById('summary-card'),
+        onSuccess: (savedLog) => {
+            console.log('✅ Biometrics recorded successfully:', savedLog);
+            // In subsequent stories (US-003), this will transition to the DOMS map tab
+        }
+    });
+
+    // Update quality label on star clicks
+    const starsContainer = document.getElementById('stars-container');
+    const qualityValLabel = document.getElementById('quality-val-label');
+    if (starsContainer && qualityValLabel) {
+        starsContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.star-btn');
+            if (btn) {
+                const rating = btn.dataset.rating;
+                qualityValLabel.textContent = `${rating} / 5 sao`;
+            }
+        });
     }
+
+    // Expose storage for browser debugging
+    window.NTRevo = {
+        storage,
+        checkinForm
+    };
 });
-
-// Mock AI Breakdown Logic
-function triggerAIBreakdown() {
-    const todoColumn = document.getElementById('todo');
-    const taskId = 'task-' + Math.floor(Math.random() * 10000);
-    
-    const newTask = document.createElement('div');
-    newTask.className = 'task-card';
-    newTask.draggable = true;
-    newTask.id = taskId;
-    newTask.ondragstart = drag;
-    
-    newTask.innerHTML = `
-        <h4>Thiết kế giao diện bằng AI</h4>
-        <p>Sử dụng AI để sinh Wireframe & Component Layout.</p>
-        <div class="tags">
-            <span class="tag tag-ai">✨ AI Generated</span>
-            <span class="tag">UI/UX</span>
-        </div>
-    `;
-    
-    todoColumn.appendChild(newTask);
-    alert('AI đã phân tách và thêm 1 tác vụ mới vào cột To Do!');
-}

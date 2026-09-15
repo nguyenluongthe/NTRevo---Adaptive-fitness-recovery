@@ -26,3 +26,23 @@ Started: 2026-09-15
   - Gotchas encountered: `localStorage` is not available in Node.js test environment; using a clean `MemoryStorage` fallback allows fast headless test runs.
   - Useful context: `checkConsecutiveDangerReadiness` is already provided and verified in the storage layer for story US-006.
 ---
+
+## 2026-09-15 - US-002: Morning biometrics check-in form (FR-01)
+- What was implemented:
+  - Created Athletic Dark Mode UI in `frontend/index.html` with step navigation, glowing sliders, star ratings, and health guidance panels.
+  - Implemented `BiometricsCheckinForm` controller in `frontend/js/checkin.js` with client-side validation (sleep 0-14h, RHR 30-150 bpm, stress 1-5).
+  - Modernized `frontend/css/styles.css` with responsive layout, custom range slider thumbs, neon green/cyan accents, and WCAG AA contrast.
+  - Added unit tests in `tests/checkin.test.js` validating form boundaries, error reporting, and storage persistence. All 6 tests passing.
+- Files changed:
+  - `frontend/index.html`
+  - `frontend/css/styles.css`
+  - `frontend/js/checkin.js`
+  - `frontend/js/app.js`
+  - `tests/checkin.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: Decouple form validation and DOM events inside `BiometricsCheckinForm` class, enabling easy headless Node unit testing without requiring JSDOM.
+  - Gotchas encountered: Ensure slider labels and star states re-render when switching back to already-saved dates.
+  - Useful context: Form submission triggers `onSuccess` callback, which can seamlessly activate Tab 2 (DOMS map) in US-003.
+---

@@ -1,44 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartTask AI Hub - Kanban Board</title>
+    <meta name="description" content="NTRevo - Nền tảng phục hồi thể lực thích ứng thông minh. Đánh giá readiness score, giấc ngủ, nhịp tim và lập kế hoạch phục hồi cơ bắp cá nhân hóa.">
+    <title>NTRevo | Adaptive Fitness & Recovery Platform</title>
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-    <div class="header">
-        <h2>🚀 SmartTask AI Hub - Kanban Dashboard</h2>
-        <div class="nav">
-            <a href="index.html" class="active">Dashboard</a>
-            <a href="ai-generator.html">AI Generator</a>
-        </div>
-        <button class="btn-ai" onclick="triggerAIBreakdown()">✨ AI Auto-Breakdown (Mock)</button>
-    </div>
-
-    <div class="kanban-board">
-        <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>To Do</h3>
-            <div class="task-card" draggable="true" ondragstart="drag(event)" id="task1">
-                <h4>Phân tích Yêu cầu</h4>
-                <p>Khởi tạo tài liệu PRD cho Sprint 1</p>
-                <div class="tags">
-                    <span class="tag">Docs</span>
-                    <span class="tag tag-ai">AI Assisted</span>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-wrapper">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="brand-title">NTREVO</h1>
+                    <div class="brand-subtitle">Adaptive Fitness Recovery</div>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="status-badge" id="system-status-badge">
+                    <span class="pulse-dot"></span>
+                    <span>AI Engine Ready</span>
                 </div>
             </div>
         </div>
-        <div class="column" id="in-progress" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>In Progress</h3>
-        </div>
-        <div class="column" id="review" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Review</h3>
-        </div>
-        <div class="column" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Done</h3>
-        </div>
-    </div>
+    </header>
 
-    <script src="./js/app.js"></script>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Workflow Tabs -->
+        <nav class="flow-tabs" aria-label="Luồng đánh giá phục hồi">
+            <button class="flow-tab active" id="tab-checkin" data-tab="checkin">
+                <span class="step-num">1</span>
+                <span>Chỉ Số Buổi Sáng (FR-01)</span>
+            </button>
+            <button class="flow-tab" id="tab-doms" data-tab="doms">
+                <span class="step-num">2</span>
+                <span>Bản Đồ Cơ Bắp DOMS (FR-02)</span>
+            </button>
+            <button class="flow-tab" id="tab-readiness" data-tab="readiness">
+                <span class="step-num">3</span>
+                <span>Điểm Sẵn Sàng (FR-03 & FR-04)</span>
+            </button>
+            <button class="flow-tab" id="tab-trends" data-tab="trends">
+                <span class="step-num">4</span>
+                <span>Xu Hướng & Báo Cáo (FR-06 & FR-07)</span>
+            </button>
+        </nav>
+
+        <!-- Dashboard Grid (Step 1: Morning Check-in) -->
+        <div class="dashboard-grid" id="view-checkin">
+            <!-- Left: Check-in Form Card -->
+            <section class="card" aria-labelledby="form-heading">
+                <h2 class="card-title" id="form-heading">
+                    <span>🌅 Ghi Nhận Dữ Liệu Thể Lực Buổi Sáng</span>
+                </h2>
+                <p class="card-desc">Nhập nhanh các thông số giấc ngủ và nhịp tim để AI tính toán mức độ phục hồi hệ thần kinh giao cảm.</p>
+
+                <!-- Feedback Alerts -->
+                <div id="error-alert" class="alert alert-danger hidden" role="alert"></div>
+                <div id="success-alert" class="alert alert-success hidden" role="status"></div>
+
+                <form id="biometrics-form" novalidate>
+                    <!-- Date Picker -->
+                    <div class="form-group">
+                        <label for="date-input" class="form-label">
+                            <span>Ngày ghi nhận</span>
+                        </label>
+                        <input type="date" id="date-input" class="form-input-number" required>
+                    </div>
+
+                    <!-- Sleep Duration Slider -->
+                    <div class="form-group">
+                        <label for="sleep-slider" class="form-label">
+                            <span>Thời gian ngủ đêm qua</span>
+                            <span class="metric-value-badge" id="sleep-val-label">7.5 giờ</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="sleep-slider" 
+                            class="range-slider" 
+                            min="0" 
+                            max="14" 
+                            step="0.5" 
+                            value="7.5"
+                            aria-label="Thời gian ngủ theo giờ"
+                        >
+                        <div class="slider-ticks">
+                            <span>0h</span>
+                            <span>4h</span>
+                            <span>7.5h (Tối ưu)</span>
+                            <span>10h</span>
+                            <span>14h</span>
+                        </div>
+                    </div>
+
+                    <!-- Sleep Quality Rating (Stars) -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Chất lượng giấc ngủ</span>
+                            <span class="metric-value-badge" id="quality-val-label">4 / 5 sao</span>
+                        </label>
+                        <div class="star-rating" id="stars-container" role="radiogroup" aria-label="Đánh giá sao giấc ngủ">
+                            <button type="button" class="star-btn active" data-rating="1" aria-label="1 sao - Rất mệt">★</button>
+                            <button type="button" class="star-btn active" data-rating="2" aria-label="2 sao - Tệ">★</button>
+                            <button type="button" class="star-btn active" data-rating="3" aria-label="3 sao - Bình thường">★</button>
+                            <button type="button" class="star-btn active" data-rating="4" aria-label="4 sao - Ngon giấc">★</button>
+                            <button type="button" class="star-btn" data-rating="5" aria-label="5 sao - Hoàn hảo">★</button>
+                        </div>
+                        <p class="field-hint">Đánh giá độ sâu giấc ngủ, số lần thức giấc và cảm giác khi tỉnh dậy.</p>
+                    </div>
+
+                    <!-- Resting Heart Rate (RHR) -->
+                    <div class="form-group">
+                        <label for="rhr-input" class="form-label">
+                            <span>Nhịp tim nghỉ ngơi (RHR)</span>
+                            <span class="metric-value-badge">bpm</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="rhr-input" 
+                            class="form-input-number" 
+                            min="30" 
+                            max="150" 
+                            value="56" 
+                            placeholder="Ví dụ: 56 bpm"
+                            required
+                        >
+                        <p class="field-hint">Đo ngay khi vừa thức dậy trên giường (Bình thường: 45 - 65 bpm đối với VĐV).</p>
+                    </div>
+
+                    <!-- Stress Level -->
+                    <div class="form-group">
+                        <label for="stress-select" class="form-label">
+                            <span>Mức độ căng thẳng / Stress</span>
+                        </label>
+                        <select id="stress-select" class="form-select">
+                            <option value="1">Mức 1 - Rất thư thái, tinh thần sảng khoái</option>
+                            <option value="2" selected>Mức 2 - Bình thường, nhẹ nhàng</option>
+                            <option value="3">Mức 3 - Căng thẳng vừa phải / Áp lực công việc</option>
+                            <option value="4">Mức 4 - Stress cao, mệt mỏi tinh thần</option>
+                            <option value="5">Mức 5 - Quá tải / Burnout hoàn toàn</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-primary" id="btn-save-biometrics">
+                        <span>Lưu Chỉ Số & Tiếp Tục Sang Bản Đồ Đau Cơ</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+
+                <!-- Saved Summary Box -->
+                <div id="summary-card" class="summary-box hidden">
+                    <div class="summary-header">
+                        <h3 style="font-size: 1rem; color: #fff;">✅ Dữ Liệu Hôm Nay Đã Được Ghi Nhận</h3>
+                    </div>
+                    <div class="summary-pills summary-content">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Sports Science Reference Panel -->
+            <aside class="info-card">
+                <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 1.2rem;">
+                    💡 Khoa Học Phục Hồi Thể Thao
+                </h3>
+
+                <div class="info-item">
+                    <div class="info-icon">💤</div>
+                    <div>
+                        <h4 class="info-title">Giấc Ngủ & Hormones</h4>
+                        <p class="info-desc">Hơn 95% lượng hormone tăng trưởng (GH) phục hồi mô cơ được tiết ra trong các giai đoạn giấc ngủ sâu (Deep Sleep & REM).</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">❤️</div>
+                    <div>
+                        <h4 class="info-title">Nhịp Tim Nghỉ Ngơi (RHR)</h4>
+                        <p class="info-desc">RHR tăng cao hơn 5-7 bpm so với baseline là dấu hiệu sớm của việc hệ thần kinh giao cảm chưa kịp phục hồi hoặc sắp bị ốm.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🧠</div>
+                    <div>
+                        <h4 class="info-title">Căng Thẳng Tâm Lý (Stress)</h4>
+                        <p class="info-desc">Mức cortisol cao từ stress cuộc sống làm giảm tốc độ tổng hợp glycogen trong cơ bắp tới 40%.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🎯</div>
+                    <div>
+                        <h4 class="info-title">Bước Tiếp Theo</h4>
+                        <p class="info-desc">Sau khi lưu chỉ số, hệ thống sẽ mở Bản đồ cơ bắp (DOMS Map) để đánh giá các nhóm cơ chịu tải trọng cao trong buổi tập trước.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <p>© 2026 NTRevo Adaptive Fitness & Recovery Platform. Dành cho vận động viên và người tập thể hình chuyên nghiệp.</p>
+    </footer>
+
+    <!-- App Scripts -->
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
