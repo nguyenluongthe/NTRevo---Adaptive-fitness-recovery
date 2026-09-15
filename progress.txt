@@ -46,3 +46,24 @@ Started: 2026-09-15
   - Gotchas encountered: Ensure slider labels and star states re-render when switching back to already-saved dates.
   - Useful context: Form submission triggers `onSuccess` callback, which can seamlessly activate Tab 2 (DOMS map) in US-003.
 ---
+
+## 2026-09-15 - US-003: Interactive DOMS muscle soreness map (FR-02)
+- What was implemented:
+  - Built interactive SVG anatomical body map covering anterior (mặt trước) and posterior (mặt sau) muscle groups (`chest`, `shoulders`, `biceps`, `abs`, `quads`, `upper_back`, `lower_back`, `triceps`, `glutes`, `hamstrings`, `calves`).
+  - Added pain severity scale modal (1-10) with dynamic heat-map colors (Yellow 1-3, Orange 4-6, Crimson 7-10).
+  - Integrated `DomsMapController` in `frontend/js/doms.js` with storage persistence and soreness chip list removal.
+  - Implemented responsive tab navigation in `frontend/js/app.js` linking Morning Check-in to DOMS map.
+  - Added unit test suite `tests/doms.test.js` validating color mapping, muscle definitions, and storage integration. All 9 total tests passing.
+- Files changed:
+  - `frontend/index.html`
+  - `frontend/css/styles.css`
+  - `frontend/js/doms.js`
+  - `frontend/js/app.js`
+  - `tests/doms.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: Using SVG `data-muscle` attributes enables unified event binding across both SVG clicks and button list clicks.
+  - Gotchas encountered: `open_browser_url` tool encountered Playwright 404 driver download error on the local environment, so manual browser verification is available on `http://localhost:4173` or direct file open.
+  - Useful context: `DomsLog` now provides localized muscle list and pain ratings directly to `AI Readiness Score Engine` in story US-004.
+---

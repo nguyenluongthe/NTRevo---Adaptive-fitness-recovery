@@ -49,7 +49,7 @@
             </button>
         </nav>
 
-        <!-- Dashboard Grid (Step 1: Morning Check-in) -->
+        <!-- VIEW 1: Morning Biometrics Check-in (FR-01) -->
         <div class="dashboard-grid" id="view-checkin">
             <!-- Left: Check-in Form Card -->
             <section class="card" aria-labelledby="form-heading">
@@ -201,6 +201,195 @@
                     </div>
                 </div>
             </aside>
+        </div>
+
+        <!-- VIEW 2: Interactive DOMS Muscle Map (FR-02 / US-003) -->
+        <div class="dashboard-grid hidden" id="view-doms">
+            <!-- Left: Interactive Body Map & Quick Selector -->
+            <section class="card" aria-labelledby="doms-heading">
+                <h2 class="card-title" id="doms-heading">
+                    <span>🗺️ Bản Đồ Cơ Bắp Đau Mỏi (DOMS Map)</span>
+                </h2>
+                <p class="card-desc">Chạm vào từng vùng cơ bắp trên mô hình cơ thể hoặc bấm chọn danh sách bên dưới để đánh giá độ đau nhức (1-10).</p>
+
+                <!-- Dual Body View (Front & Back) -->
+                <div class="body-maps-container" id="body-maps-container">
+                    <!-- Front View SVG -->
+                    <div class="map-view-wrapper">
+                        <span class="map-view-title">Mặt Trước (Anterior)</span>
+                        <svg class="anatomical-svg" viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Head / Neck Outline -->
+                            <circle cx="100" cy="30" r="18" fill="#1e293b" stroke="rgba(255,255,255,0.2)"/>
+                            <rect x="94" y="48" width="12" height="14" rx="3" fill="#1e293b" stroke="rgba(255,255,255,0.2)"/>
+                            
+                            <!-- Shoulders (Deltoids) -->
+                            <path class="muscle-path" data-muscle="shoulders" d="M 52,65 Q 65,58 78,66 L 75,90 Q 56,92 50,78 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="shoulders" d="M 148,65 Q 135,58 122,66 L 125,90 Q 144,92 150,78 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Chest (Pectorals) -->
+                            <path class="muscle-path" data-muscle="chest" d="M 78,68 L 100,74 L 122,68 L 122,106 Q 100,116 78,106 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Biceps -->
+                            <rect class="muscle-path" data-muscle="biceps" x="46" y="94" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <rect class="muscle-path" data-muscle="biceps" x="136" y="94" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Abs / Core -->
+                            <path class="muscle-path" data-muscle="abs" d="M 80,112 L 120,112 L 116,168 L 84,168 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Quads (Thighs) -->
+                            <path class="muscle-path" data-muscle="quads" d="M 74,180 L 96,182 L 94,256 L 72,252 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="quads" d="M 104,182 L 126,180 L 128,252 L 106,256 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Calves (Lower Legs Front) -->
+                            <path class="muscle-path" data-muscle="calves" d="M 74,272 L 92,274 L 88,335 L 76,335 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="calves" d="M 108,274 L 126,272 L 124,335 L 112,335 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                        </svg>
+                    </div>
+
+                    <!-- Back View SVG -->
+                    <div class="map-view-wrapper">
+                        <span class="map-view-title">Mặt Sau (Posterior)</span>
+                        <svg class="anatomical-svg" viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Head / Neck Outline -->
+                            <circle cx="100" cy="30" r="18" fill="#1e293b" stroke="rgba(255,255,255,0.2)"/>
+                            <rect x="94" y="48" width="12" height="14" rx="3" fill="#1e293b" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Upper Back (Traps / Lats) -->
+                            <path class="muscle-path" data-muscle="upper_back" d="M 76,64 L 124,64 L 130,118 L 70,118 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Triceps -->
+                            <rect class="muscle-path" data-muscle="triceps" x="46" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <rect class="muscle-path" data-muscle="triceps" x="136" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Lower Back -->
+                            <path class="muscle-path" data-muscle="lower_back" d="M 78,122 L 122,122 L 118,154 L 82,154 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Glutes -->
+                            <path class="muscle-path" data-muscle="glutes" d="M 72,158 Q 100,165 128,158 L 124,196 Q 100,204 76,196 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Hamstrings -->
+                            <path class="muscle-path" data-muscle="hamstrings" d="M 74,204 L 96,206 L 94,260 L 72,256 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="hamstrings" d="M 104,206 L 126,204 L 128,256 L 106,260 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Calves (Back) -->
+                            <path class="muscle-path" data-muscle="calves" d="M 72,274 L 94,276 L 90,336 L 76,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="calves" d="M 106,276 L 128,274 L 124,336 L 110,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Quick Button Selector Grid -->
+                <div class="muscle-grid-title">Chọn Nhanh Nhóm Cơ:</div>
+                <div class="muscle-quick-grid" id="muscle-quick-grid">
+                    <button type="button" class="muscle-quick-btn" data-muscle="chest">
+                        <span>Cơ Ngực</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="shoulders">
+                        <span>Cơ Vai</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="upper_back">
+                        <span>Lưng Trên / Xô</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="lower_back">
+                        <span>Lưng Dưới</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="biceps">
+                        <span>Tay Trước</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="triceps">
+                        <span>Tay Sau</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="abs">
+                        <span>Cơ Bụng</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="quads">
+                        <span>Đùi Trước</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="hamstrings">
+                        <span>Đùi Sau</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="glutes">
+                        <span>Cơ Mông</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="calves">
+                        <span>Bắp Chân</span><span class="pain-badge">+</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right: Selected Soreness List & Pain Scale Legend -->
+            <aside class="card">
+                <h3 class="card-title" style="font-size: 1.2rem;">
+                    <span>📋 Nhóm Cơ Đã Chọn Đau Nhức</span>
+                </h3>
+                <p class="card-desc">Danh sách các nhóm cơ đang mỏi cần AI lập giáo án giãn cơ phục hồi thích ứng.</p>
+
+                <!-- Soreness Chips List -->
+                <div class="soreness-chips-list" id="selected-soreness-list">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <!-- Pain Scale Legend -->
+                <div class="pain-legend">
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--amber-warning);"></span>
+                        <span>1-3: Đau nhẹ</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--orange-warning);"></span>
+                        <span>4-6: Đau vừa</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--crimson-danger);"></span>
+                        <span>7-10: Căng cứng</span>
+                    </div>
+                </div>
+
+                <!-- Save & Continue CTA -->
+                <button type="button" class="btn-primary" id="btn-save-doms">
+                    <span>Lưu Bản Đồ Cơ & Chạy AI Đánh Giá</span>
+                    <span>➔</span>
+                </button>
+            </aside>
+        </div>
+
+        <!-- DOMS Pain Severity Modal (US-003) -->
+        <div id="doms-modal" class="modal-backdrop hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-muscle-name">Đánh Giá Mức Độ Đau</h3>
+                    <button type="button" class="modal-close" aria-label="Đóng">&times;</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="pain-level-slider" class="form-label">
+                        <span>Thang đo độ đau nhức (DOMS)</span>
+                        <span class="metric-value-badge" id="modal-pain-val">5 / 10</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="pain-level-slider" 
+                        class="range-slider" 
+                        min="1" 
+                        max="10" 
+                        step="1" 
+                        value="5"
+                    >
+                    <div class="slider-ticks">
+                        <span>1 (Nhẹ)</span>
+                        <span>5 (Vừa)</span>
+                        <span>10 (Dữ dội)</span>
+                    </div>
+                    <p class="field-hint" id="modal-pain-desc" style="color: var(--neon-cyan); margin-top: 10px;">
+                        Đau vừa - Hạn chế biên độ chuyển động
+                    </p>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary" id="modal-save-muscle">Lưu Mức Đau</button>
+                    <button type="button" class="btn-danger-outline" id="modal-remove-muscle">Bỏ Chọn</button>
+                </div>
+            </div>
         </div>
     </main>
 
