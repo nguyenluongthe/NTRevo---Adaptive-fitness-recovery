@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTRevo - Dynamic AI Wireframe Viewer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #09090B;
+            color: #FAFAFA;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #18181B;
+            border-bottom: 1px solid #27272A;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #FF4500;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+        .nav-link {
+            color: #A1A1AA;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.15s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #FF4500;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="index.html" class="navbar-brand">NTRevo <span>Adaptive</span></a>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">Dashboard</a>
+            <a href="ai-generator.html" class="nav-link">AI Generator</a>
+            <a href="prototype.html" class="nav-link">Prototype</a>
+            <a href="wireframe-viewer.html" class="nav-link active">Wireframe Viewer</a>
+            <a href="swagger.html" class="nav-link">Swagger UI</a>
+            <a href="workout-tracker.html" class="nav-link">Workout Tracker</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div id="wireframe-root">
+            <div style="text-align:center; padding: 60px 0; color: #71717A;">
+                Đang nạp cấu trúc Wireframe từ JSON Schema...
+            </div>
+        </div>
+    </main>
+
+    <script src="js/wireframe_renderer.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const response = await fetch("../design/assessment_wireframe.json");
+                const schema = await response.json();
+                const renderer = new WireframeRenderer("wireframe-root", schema);
+                renderer.render();
+            } catch (err) {
+                console.warn("Falling back to inline schema definition", err);
+                // Inline schema fallback if loaded directly via file:// protocol
+                const fallbackSchema = {
+                    version: "1.0.0",
+                    screen_id: "screen-fitness-assessment",
+                    header: {
+                        title: "Đánh giá Thể lực & Sức bền Toàn diện",
+                        subtitle: "AI Biometric Baseline Generator - Thiết lập mốc khởi đầu tối ưu",
+                        badge: "FR-003 Dynamic Layout"
+                    },
+                    sections: [
+                        {
+                            id: "sec-cardio",
+                            title: "1. Sức bền Tim mạch & Hô hấp",
+                            layout_type: "grid-2",
+                            components: [
+                                { id: "cmp-rhr", type: "number-input", label: "Nhịp tim lúc nghỉ", field_name: "resting_heart_rate", min: 40, max: 120, default_value: 58, unit: "bpm", required: true },
+                                { id: "cmp-vo2", type: "number-input", label: "VO2max Ước tính", field_name: "estimated_vo2max", min: 20, max: 80, default_value: 48.0, unit: "ml/kg/min", required: false }
+                            ]
+                        },
+                        {
+                            id: "sec-strength",
+                            title: "2. Sức mạnh Cơ bắp Tối đa & Độ bền",
+                            layout_type: "grid-3",
+                            components: [
+                                { id: "cmp-pushups", type: "number-input", label: "Chống đẩy tối đa", field_name: "pushups_count", min: 0, max: 150, default_value: 40, unit: "reps", required: true },
+                                { id: "cmp-plank", type: "number-input", label: "Giữ Plank liên tục", field_name: "plank_duration_sec", min: 0, max: 600, default_value: 120, unit: "giây", required: true },
+                                { id: "cmp-squat", type: "number-input", label: "Squat 1RM", field_name: "squat_1rm_kg", min: 20, max: 300, default_value: 110, unit: "kg", required: false }
+                            ]
+                        },
+                        {
+                            id: "sec-subjective",
+                            title: "3. Cảm nhận Chủ quan & Đau mỏi (DOMS)",
+                            layout_type: "grid-2",
+                            components: [
+                                { id: "cmp-doms", type: "range-slider", label: "Mức độ đau mỏi cơ (DOMS)", field_name: "doms_level", min: 1, max: 10, default_value: 3, unit: "/10", required: true },
+                                { id: "cmp-muscles", type: "tag-selector", label: "Vùng cơ nhạy cảm", field_name: "sore_muscle_groups", options: ["Đùi trước", "Lưng dưới", "Vai", "Ngực", "Không đau"], default_value: "Không đau" }
+                            ]
+                        }
+                    ]
+                };
+                const renderer = new WireframeRenderer("wireframe-root", fallbackSchema);
+                renderer.render();
+            }
+        });
+    </script>
+</body>
+</html>
