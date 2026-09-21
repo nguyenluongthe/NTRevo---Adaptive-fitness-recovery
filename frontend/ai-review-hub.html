@@ -167,7 +167,7 @@
             stroke-width: 10;
             stroke-linecap: round;
             stroke-dasharray: 314;
-            stroke-dashoffset: 20; /* ~94% */
+            stroke-dashoffset: 0; /* 100% */
             transition: stroke-dashoffset 1s ease-out;
         }
 
@@ -338,7 +338,7 @@
                         <circle class="score-circle-progress" cx="60" cy="60" r="50"></circle>
                     </svg>
                     <div class="score-text-center">
-                        <div class="score-number">96</div>
+                        <div class="score-number">100</div>
                         <div class="score-max">/ 100</div>
                     </div>
                 </div>
@@ -391,11 +391,11 @@
                 </div>
             </div>
             <div style="font-size:13px; line-height:1.7; color:#D4D4D8;">
-                <p><strong>Chào Dev 1 và Dev 2!</strong> Bot AI đã phân tích toàn bộ 5 files thay đổi trong Pull Request:</p>
+                <p><strong>Chào Dev 1 và Dev 2!</strong> Bot AI đã phân tích toàn bộ files thay đổi trong Pull Request:</p>
                 <ul style="margin: 8px 0 12px 20px;">
-                    <li><span style="color:#10B981; font-weight:700;">Điểm Clean Code:</span> <strong>96/100</strong> (Vượt ngưỡng 80 điểm để tự động Approve).</li>
+                    <li><span style="color:#10B981; font-weight:700;">Điểm Clean Code:</span> <strong>100/100 (🟢 Tuyệt đối)</strong> - 0 Code Smells, 0 Nợ kỹ thuật.</li>
                     <li><span style="color:#10B981; font-weight:700;">Nguyên lý SOLID:</span> Đã tách thành công <code>calculators.py</code> (SRP) và <code>workout_strategies.py</code> (OCP/Factory).</li>
-                    <li><span style="color:#10B981; font-weight:700;">Magic Numbers:</span> 100% các hệ số tính điểm đã được đưa vào <code>ScoringConfigProvider</code>.</li>
+                    <li><span style="color:#10B981; font-weight:700;">Bảo mật & Debug Logs:</span> Đã loại bỏ 100% debug logs và đảm bảo bảo mật token.</li>
                 </ul>
                 <div style="background:rgba(16,185,129,0.08); border-left:3px solid #10B981; padding:10px 14px; border-radius:4px; font-weight:600; color:#34D399;">
                     ✓ Đủ điều kiện Merge trực tiếp vào nhánh `develop`.
