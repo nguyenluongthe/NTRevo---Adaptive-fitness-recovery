@@ -1,0 +1,108 @@
+{
+  "dataset_metadata": {
+    "athlete_id": "usr-101",
+    "description": "30-Day continuous biometric log synthesized for AI Recovery & Adaptive Training model validation",
+    "sampling_rate": "Daily morning measurement",
+    "hrv_unit": "rMSSD (ms)",
+    "baseline_hrv_mean": 62.5,
+    "baseline_hrv_std": 6.8
+  },
+  "logs": [
+    {
+      "date": "2026-08-10",
+      "hrv_rmssd": 65.2,
+      "resting_hr": 56,
+      "sleep_hours": 8.1,
+      "deep_sleep_ratio": 0.22,
+      "doms_score": 2,
+      "sore_muscles": [],
+      "rpe_previous": 6.5,
+      "readiness_score": 86.4,
+      "classification": "Optimal / Full Session"
+    },
+    {
+      "date": "2026-08-11",
+      "hrv_rmssd": 63.8,
+      "resting_hr": 57,
+      "sleep_hours": 7.5,
+      "deep_sleep_ratio": 0.20,
+      "doms_score": 3,
+      "sore_muscles": ["Chest"],
+      "rpe_previous": 8.0,
+      "readiness_score": 81.2,
+      "classification": "Optimal / Full Session"
+    },
+    {
+      "date": "2026-08-12",
+      "hrv_rmssd": 58.1,
+      "resting_hr": 60,
+      "sleep_hours": 6.8,
+      "deep_sleep_ratio": 0.16,
+      "doms_score": 5,
+      "sore_muscles": ["Legs", "Lower Back"],
+      "rpe_previous": 8.5,
+      "readiness_score": 67.5,
+      "classification": "Modified Intensity"
+    },
+    {
+      "date": "2026-08-13",
+      "hrv_rmssd": 52.0,
+      "resting_hr": 63,
+      "sleep_hours": 5.9,
+      "deep_sleep_ratio": 0.12,
+      "doms_score": 7,
+      "sore_muscles": ["Legs", "Glutes"],
+      "rpe_previous": 9.0,
+      "readiness_score": 51.3,
+      "classification": "Active Recovery"
+    },
+    {
+      "date": "2026-08-14",
+      "hrv_rmssd": 44.5,
+      "resting_hr": 68,
+      "sleep_hours": 5.2,
+      "deep_sleep_ratio": 0.09,
+      "doms_score": 9,
+      "sore_muscles": ["Total Body Fatigue"],
+      "rpe_previous": 9.5,
+      "readiness_score": 34.2,
+      "classification": "Complete Rest"
+    },
+    {
+      "date": "2026-08-15",
+      "hrv_rmssd": 59.4,
+      "resting_hr": 59,
+      "sleep_hours": 9.0,
+      "deep_sleep_ratio": 0.24,
+      "doms_score": 4,
+      "sore_muscles": ["Legs"],
+      "rpe_previous": 2.0,
+      "readiness_score": 74.8,
+      "classification": "Modified Intensity"
+    },
+    {
+      "date": "2026-08-16",
+      "hrv_rmssd": 66.8,
+      "resting_hr": 55,
+      "sleep_hours": 8.4,
+      "deep_sleep_ratio": 0.25,
+      "doms_score": 1,
+      "sore_muscles": [],
+      "rpe_previous": 5.0,
+      "readiness_score": 91.0,
+      "classification": "Optimal / Full Session"
+    },
+    {
+      "date": "2026-08-17",
+      "hrv_rmssd": 64.0,
+      "resting_hr": 56,
+      "sleep_hours": 7.9,
+      "deep_sleep_ratio": 0.21,
+      "doms_score": 3,
+      "sore_muscles": ["Shoulders"],
+      "rpe_previous": 7.5,
+      "readiness_score": 82.5,
+      "classification": "Optimal / Full Session"
+    }
+  ]
+}
