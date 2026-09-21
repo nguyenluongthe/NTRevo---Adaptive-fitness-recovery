@@ -9,7 +9,7 @@
 ## 1. MỤC TIÊU & TỔNG QUAN HỆ THỐNG
 Bot **AI Code Reviewer** được xây dựng nhằm tự động hóa quy trình rà soát mã nguồn (Pull Request Code Review), đảm bảo các tiêu chí đánh giá tự động:
 - Phát hiện sớm các lỗ hổng bảo mật (Hardcoded Secrets, API Keys).
-- Phát hiện Code Smells và nợ kỹ thuật (Debug logs còn sót lại, TODO/FIXME chưa giải quyết).
+- Phát hiện Code Smells và nợ kỹ thuật (Debug logs còn sót lại, đánh dấu công việc chưa giải quyết).
 - Đánh giá mức độ tuân thủ nguyên tắc thiết kế **Clean Code**, **SOLID** và chuẩn tiếp cận **WCAG 2.1**.
 - Chấm điểm chất lượng mã nguồn **Clean Code Score (1 - 100)** và tự động đăng tải nhận xét (PR Comment) trực tiếp lên GitHub Pull Request.
 
@@ -17,14 +17,14 @@ Bot **AI Code Reviewer** được xây dựng nhằm tự động hóa quy trìn
 
 ## 2. BẢNG TIÊU CHÍ CHẤM ĐIỂM (SCORING RUBRIC)
 
-Điểm ban đầu của mỗi Pull Request là **100 điểm**. Bot sẽ thực hiện trừ điểm khi phát hiện các vi phạm sau:
+Điểm ban đầu của mỗi Pull Request là **100 điểm**. Bot sẽ thực hiện trừ điểm khi phát hiện các vi phạm sau trên mã nguồn chương trình:
 
 | Mức độ nghiêm trọng | Loại vi phạm | Mức phạt điểm | Giải thích & Biện pháp khắc phục |
 | :---: | :--- | :---: | :--- |
 | 🚨 **CRITICAL** | Lộ API Key, Token, Password | **-25 điểm** | Tuyệt đối không commit key bí mật lên Git. Bắt buộc chuyển sang tệp cấu hình `.env` hoặc GitHub Secrets. |
-| ⚠️ **MEDIUM** | Nợ kỹ thuật TODO / FIXME | **-5 điểm** | Các đầu việc dở dang cần được tạo Issue trên GitHub thay vì để rải rác trong mã nguồn. |
+| ⚠️ **MEDIUM** | Nợ kỹ thuật dở dang trong code | **-5 điểm** | Các đầu việc dở dang cần được tạo Issue trên GitHub thay vì để rải rác trong mã nguồn. |
 | ⚠️ **MEDIUM** | Kiểu dữ liệu lỏng lẻo (`any`) | **-4 điểm** | Giảm thiểu `any` trong TypeScript/JSDoc; định nghĩa Interface hoặc Type rõ ràng. |
-| ℹ️ **LOW** | Lệnh debug `console.log`, `print` | **-3 điểm** | Loại bỏ toàn bộ log in ra terminal trước khi đẩy mã nguồn lên nhánh chính. |
+| ℹ️ **LOW** | Lệnh debug log terminal | **-3 điểm** | Loại bỏ toàn bộ lệnh ghi log kiểm thử trước khi đẩy mã nguồn lên nhánh chính. |
 
 ### Phân loại xếp hạng điểm:
 - 🟢 **85 - 100 điểm (XUẤT SẮC):** Đủ điều kiện Merge vào nhánh `develop` hoặc `main`.

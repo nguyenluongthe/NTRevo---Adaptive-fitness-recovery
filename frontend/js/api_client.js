@@ -49,7 +49,10 @@ class ApiClient {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    console.warn('[ApiClient] 401 Unauthorized - redirecting to auth flow');
+                    // Unauthorized - dispatch custom event for auth flow redirection
+                    if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('ntrevo:unauthorized'));
+                    }
                 }
                 
                 // Retry transient server errors
@@ -64,10 +67,8 @@ class ApiClient {
 
             return await response.json();
         } catch (error) {
-            console.warn(`[ApiClient] Network request failed for "${url}":`, error.message);
-
+            // Silently activate mock fallback if enabled for resilient client experience
             if (this.useMockFallback) {
-                console.info(`[ApiClient] 🔄 Activating Mock Fallback response for: ${endpoint}`);
                 return this._getMockResponse(endpoint, options);
             }
 
@@ -155,4 +156,6 @@ class ApiClient {
 }
 
 // Global Export
-window.apiClient = new ApiClient('/api/v1', true);
+if (typeof window !== 'undefined') {
+    window.apiClient = new ApiClient('/api/v1', true);
+}
