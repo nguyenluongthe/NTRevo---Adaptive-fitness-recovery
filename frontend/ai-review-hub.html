@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTRevo - AI Pull Request Reviewer & Code Quality Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #09090B;
+            --bg-card: rgba(24, 24, 27, 0.85);
+            --border-card: #27272A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #F4F4F5;
+            --text-muted: #A1A1AA;
+            --accent-orange: #FF4500;
+            --accent-cyan: #00F0FF;
+            --status-pass: #10B981;
+            --status-warn: #F59E0B;
+            --status-fail: #EF4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 85% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 15% 85%, rgba(255, 69, 0, 0.06) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-card);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 28px;
+        }
+
+        .header-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 20px;
+        }
+        .brand span { color: var(--accent-orange); }
+
+        .badge-sprint {
+            font-size: 11px;
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-card);
+        }
+        nav a.active {
+            color: var(--accent-orange);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        main {
+            max-width: 1300px;
+            margin: 32px auto;
+            padding: 0 24px 80px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Top Hero Card with SVG Score */
+        .hero-review-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 28px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        .hero-left {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .score-circle-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .score-circle-svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: #27272A;
+            stroke-width: 10;
+        }
+
+        .score-circle-progress {
+            fill: none;
+            stroke: url(#scoreGrad);
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 314;
+            stroke-dashoffset: 20; /* ~94% */
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-text-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .score-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1;
+        }
+        .score-max {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .hero-meta h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .audit-badges-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .audit-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        .pill-solid { background: rgba(16, 185, 129, 0.12); color: var(--status-pass); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .pill-wcag { background: rgba(0, 240, 255, 0.12); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3); }
+        .pill-smells { background: rgba(245, 158, 11, 0.12); color: var(--status-warn); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Diff Viewer Section */
+        .diff-card {
+            background: #101014;
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            margin-bottom: 32px;
+        }
+
+        .diff-topbar {
+            background: #18181B;
+            border-bottom: 1px solid var(--border-card);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diff-filename {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FAFAFA;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .diff-content {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .diff-line {
+            padding: 3px 16px;
+            display: flex;
+            gap: 16px;
+        }
+        .diff-line.add { background: rgba(16, 185, 129, 0.1); color: #34D399; }
+        .diff-line.del { background: rgba(239, 68, 68, 0.1); color: #F87171; }
+        .diff-line.neutral { color: #A1A1AA; }
+        .diff-num { color: #52525B; user-select: none; width: 35px; text-align: right; }
+
+        /* Simulated AI PR Comment */
+        .comment-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 24px;
+        }
+        .bot-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .bot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF4500, #00F0FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="brand">
+                NT<span>Revo</span>
+                <span class="badge-sprint">Chương 7: AI Code Review</span>
+            </a>
+            <nav>
+                <a href="index.html">Dashboard</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html">Prototype (W2)</a>
+                <a href="wireframe-viewer.html">Wireframe (W2)</a>
+                <a href="swagger.html">OpenAPI (W3)</a>
+                <a href="workout-tracker.html">Tracker (W4)</a>
+                <a href="ai-review-hub.html" class="active">AI Review Hub (W5)</a>
+                <a href="e2e-automation.html">E2E Testing (W6)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <div>
+                <h1>Trung tâm Chấm điểm Mã nguồn & AI Pull Request Reviewer</h1>
+                <p>Kịch bản tự động `ai_code_reviewer.py` kết nối LLM API quét Git Diff, đo Clean Code Score và đánh giá nguyên lý SOLID.</p>
+            </div>
+            <div>
+                <span style="font-size:12px; background:rgba(0,240,255,0.1); color:#00F0FF; padding:6px 14px; border-radius:20px; border:1px solid rgba(0,240,255,0.3); font-weight:700;">
+                    Workflow: ai_review.yml Active
+                </span>
+            </div>
+        </div>
+
+        <!-- Hero Clean Code Score -->
+        <div class="hero-review-card">
+            <div class="hero-left">
+                <div class="score-circle-wrapper">
+                    <svg class="score-circle-svg" width="120" height="120" viewBox="0 0 120 120">
+                        <defs>
+                            <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#10B981" />
+                                <stop offset="100%" stop-color="#00F0FF" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="score-circle-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="score-circle-progress" cx="60" cy="60" r="50"></circle>
+                    </svg>
+                    <div class="score-text-center">
+                        <div class="score-number">96</div>
+                        <div class="score-max">/ 100</div>
+                    </div>
+                </div>
+                <div class="hero-meta">
+                    <h2>Đánh giá Chất lượng PR: EXCELLENT</h2>
+                    <p style="font-size:13px; color:#A1A1AA; max-width:520px;">Mã nguồn vượt qua toàn bộ tiêu chuẩn bảo mật, tuân thủ Clean Architecture, loại bỏ 100% Code Smells và kiểm soát độ phức tạp Cyclomatic dưới 5.</p>
+                    <div class="audit-badges-row">
+                        <span class="audit-pill pill-solid">✓ SOLID Principles (5/5)</span>
+                        <span class="audit-pill pill-wcag">✓ WCAG 2.1 AA Contrast Passed</span>
+                        <span class="audit-pill pill-smells">✓ 0 Code Smells Detected</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button style="background:#18181B; border:1px solid #3F3F46; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;" onclick="alert('Đang chạy lại phân tích AI Review trên Pull Request gần nhất...')">
+                    🔄 Quét lại PR Diff
+                </button>
+            </div>
+        </div>
+
+        <!-- Git Diff Viewer -->
+        <div class="diff-card">
+            <div class="diff-topbar">
+                <div class="diff-filename">
+                    <span>📄 backend/services/recovery_engine.py &rarr; Strategy Pattern Refactor</span>
+                </div>
+                <div style="font-size:12px; color:#A1A1AA;">
+                    <span style="color:#34D399; font-weight:700;">+42 lines</span> &nbsp; 
+                    <span style="color:#F87171; font-weight:700;">-85 lines</span>
+                </div>
+            </div>
+            <div class="diff-content">
+                <div class="diff-line neutral"><span class="diff-num">1</span><span>@@ -45,18 +45,14 @@ def generate_routine(...)</span></div>
+                <div class="diff-line del"><span class="diff-num">2</span><span>- # OLD CODE SMELL: Giant switch conditional with magic numbers</span></div>
+                <div class="diff-line del"><span class="diff-num">3</span><span>- if session_type == 'Strength': sets = int(4 * 0.85)</span></div>
+                <div class="diff-line del"><span class="diff-num">4</span><span>- elif session_type == 'HIIT': intervals = int(8 * 0.50)</span></div>
+                <div class="diff-line add"><span class="diff-num">5</span><span>+ # REFACTORED: Open/Closed Principle via WorkoutStrategyFactory</span></div>
+                <div class="diff-line add"><span class="diff-num">6</span><span>+ strategy = WorkoutStrategyFactory.get_strategy(session_type)</span></div>
+                <div class="diff-line add"><span class="diff-num">7</span><span>+ return strategy.generate_routine(readiness_score, vol_mult, int_mult)</span></div>
+            </div>
+        </div>
+
+        <!-- Simulated AI PR Comment -->
+        <div class="comment-box">
+            <div class="bot-header">
+                <div class="bot-avatar">AI</div>
+                <div>
+                    <div style="font-weight:700; color:#fff; font-size:14px;">NTRevo AI Code Reviewer Bot <span style="font-size:11px; background:#27272A; color:#A1A1AA; padding:2px 8px; border-radius:10px; margin-left:8px;">BOT</span></div>
+                    <div style="font-size:12px; color:#71717A;">Được kích hoạt bởi GitHub Actions #PR-05</div>
+                </div>
+            </div>
+            <div style="font-size:13px; line-height:1.7; color:#D4D4D8;">
+                <p><strong>Chào Dev 1 và Dev 2!</strong> Bot AI đã phân tích toàn bộ 5 files thay đổi trong Pull Request:</p>
+                <ul style="margin: 8px 0 12px 20px;">
+                    <li><span style="color:#10B981; font-weight:700;">Điểm Clean Code:</span> <strong>96/100</strong> (Vượt ngưỡng 80 điểm để tự động Approve).</li>
+                    <li><span style="color:#10B981; font-weight:700;">Nguyên lý SOLID:</span> Đã tách thành công <code>calculators.py</code> (SRP) và <code>workout_strategies.py</code> (OCP/Factory).</li>
+                    <li><span style="color:#10B981; font-weight:700;">Magic Numbers:</span> 100% các hệ số tính điểm đã được đưa vào <code>ScoringConfigProvider</code>.</li>
+                </ul>
+                <div style="background:rgba(16,185,129,0.08); border-left:3px solid #10B981; padding:10px 14px; border-radius:4px; font-weight:600; color:#34D399;">
+                    ✓ Đủ điều kiện Merge trực tiếp vào nhánh `develop`.
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

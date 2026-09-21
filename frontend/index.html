@@ -1,48 +1,515 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartTask AI Hub - Kanban Board</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <title>NTRevo - Master Athlete Command Center & AI Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #09090B;
+            --bg-card: rgba(24, 24, 27, 0.85);
+            --border-card: #27272A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #F4F4F5;
+            --text-muted: #A1A1AA;
+            --accent-orange: #FF4500;
+            --accent-cyan: #00F0FF;
+            --status-pass: #10B981;
+            --status-warn: #F59E0B;
+            --status-fail: #EF4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-secondary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 69, 0, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0, 240, 255, 0.06) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background: rgba(9, 9, 11, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-card);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 28px;
+        }
+
+        .header-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 800;
+            font-size: 20px;
+        }
+        .brand span { color: var(--accent-orange); }
+
+        .badge-portal {
+            font-size: 11px;
+            background: rgba(255, 69, 0, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-card);
+        }
+        nav a.active {
+            color: var(--accent-orange);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        main {
+            max-width: 1300px;
+            margin: 32px auto;
+            padding: 0 24px 80px 24px;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: var(--bg-card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; width: 300px;
+            background: radial-gradient(circle at 100% 50%, rgba(255, 69, 0, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-text h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .hero-score-badge {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(9, 9, 11, 0.6);
+            border: 1px solid var(--border-card);
+            padding: 16px 24px;
+            border-radius: 14px;
+        }
+        .hero-score-val {
+            font-size: 40px;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1;
+        }
+        .hero-score-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .hero-score-status {
+            font-size: 13px;
+            color: var(--status-pass);
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* Biometric Stat Strip */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 36px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 69, 0, 0.4);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .stat-number {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        .stat-sub {
+            font-size: 12px;
+            color: #71717A;
+            margin-top: 4px;
+        }
+
+        /* Sprint Matrix Grid */
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sprint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .sprint-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .sprint-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 69, 0, 0.4);
+        }
+
+        .sprint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sprint-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 69, 0, 0.12);
+            color: var(--accent-orange);
+            border: 1px solid rgba(255, 69, 0, 0.25);
+        }
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--status-pass);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sprint-card h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+
+        .sprint-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .deliverables-list {
+            list-style: none;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #D4D4D8;
+        }
+        .deliverables-list li {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .deliverables-list li::before {
+            content: '✓';
+            color: var(--status-pass);
+            font-weight: 700;
+        }
+
+        .sprint-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #27272A;
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid #3F3F46;
+        }
+        .sprint-btn:hover {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <h2>🚀 SmartTask AI Hub - Kanban Dashboard</h2>
-        <div class="nav">
-            <a href="index.html" class="active">Dashboard</a>
-            <a href="ai-generator.html">AI Generator</a>
-            <a href="prototype.html">Prototype (W2)</a>
-            <a href="wireframe-viewer.html">Wireframe (W2)</a>
-            <a href="swagger.html">OpenAPI (W3)</a>
-            <a href="workout-tracker.html">Tracker (W4)</a>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="brand">
+                NT<span>Revo</span>
+                <span class="badge-portal">Master Command Center</span>
+            </a>
+            <nav>
+                <a href="index.html" class="active">Dashboard</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html">Prototype (W2)</a>
+                <a href="wireframe-viewer.html">Wireframe (W2)</a>
+                <a href="swagger.html">OpenAPI (W3)</a>
+                <a href="workout-tracker.html">Tracker (W4)</a>
+                <a href="ai-review-hub.html">AI Review Hub (W5)</a>
+                <a href="e2e-automation.html">E2E Testing (W6)</a>
+            </nav>
         </div>
-        <button class="btn-ai" onclick="triggerAIBreakdown()">✨ AI Auto-Breakdown (Mock)</button>
-    </div>
+    </header>
 
-    <div class="kanban-board">
-        <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>To Do</h3>
-            <div class="task-card" draggable="true" ondragstart="drag(event)" id="task1">
-                <h4>Phân tích Yêu cầu</h4>
-                <p>Khởi tạo tài liệu PRD cho Sprint 1</p>
-                <div class="tags">
-                    <span class="tag">Docs</span>
-                    <span class="tag tag-ai">AI Assisted</span>
+    <main>
+        <!-- Hero Section -->
+        <div class="hero-banner">
+            <div class="hero-text">
+                <h1>Chào mừng trở lại, Vận động viên!</h1>
+                <p>Hệ thống NTRevo Adaptive Fitness & Recovery Engine đang hoạt động ổn định. Toàn bộ chuỗi 6 Sprints đã được tích hợp đầy đủ giữa Dev 1 (Backend/AI Core) và Dev 2 (Frontend/QA).</p>
+            </div>
+            <div class="hero-score-badge">
+                <div class="hero-score-val" id="score-val">82</div>
+                <div>
+                    <div class="hero-score-label">Readiness Score Hôm nay</div>
+                    <div class="hero-score-status">● Optimal / Full Capacity</div>
                 </div>
             </div>
         </div>
-        <div class="column" id="in-progress" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>In Progress</h3>
-        </div>
-        <div class="column" id="review" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Review</h3>
-        </div>
-        <div class="column" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Done</h3>
-        </div>
-    </div>
 
-    <script src="./js/app.js"></script>
+        <!-- Biometrics Stat Strip -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-label">Độ biến thiên HRV (rMSSD)</div>
+                <div class="stat-number">64.0 <span style="font-size:14px; color:#A1A1AA;">ms</span></div>
+                <div class="stat-sub">+3.2ms so với baseline 14 ngày</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Thời lượng Giấc ngủ Đêm</div>
+                <div class="stat-number">7h 48m</div>
+                <div class="stat-sub">22% Tỷ lệ giấc ngủ sâu (Deep Sleep)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Chỉ số Thể lực FitnessScore™</div>
+                <div class="stat-number">78.5 <span style="font-size:14px; color:#A1A1AA;">/100</span></div>
+                <div class="stat-sub">Hạng thể lực: Advanced Fit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Độ phủ Kiểm thử E2E QA</div>
+                <div class="stat-number" style="color:#10B981;">100%</div>
+                <div class="stat-sub">20/20 Yêu cầu chức năng đạt chuẩn</div>
+            </div>
+        </div>
+
+        <!-- Sprints Matrix Section -->
+        <div class="section-title">
+            <span>🗺️ Lộ trình Phát triển 6 Sprints Tích hợp (50% - 50%)</span>
+            <span style="font-size:13px; color:#10B981; font-weight:600;">Trạng thái: 100% Hoàn thành Sprint 1 &rarr; 6</span>
+        </div>
+
+        <div class="sprint-grid">
+            <!-- Sprint 1 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 1: Chương 3</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>Yêu cầu & PRD Kỹ thuật</h3>
+                    <p class="sprint-desc">Đặc tả toàn diện PRD, công thức toán học FitnessScore™ và bộ khung REST API Router Skeleton.</p>
+                    <ul class="deliverables-list">
+                        <li>PRD Kỹ thuật tổng thể (`PRD_Technical_Spec.md`)</li>
+                        <li>Đặc tả thuật toán Recovery Engine (`06_...`)</li>
+                        <li>Khung Backend REST API Router (`app.py`)</li>
+                    </ul>
+                </div>
+                <a href="ai-generator.html" class="sprint-btn">🚀 Mở AI Prompt Generator &rarr;</a>
+            </div>
+
+            <!-- Sprint 2 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 2: Chương 4</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>Thiết kế UI/UX & Wireframe Động</h3>
+                    <p class="sprint-desc">Bản mẫu Prototype Glassmorphism WCAG 2.1 AA và trình render Server-Driven UI từ JSON Schema.</p>
+                    <ul class="deliverables-list">
+                        <li>Bản mẫu tương tác Glassmorphism (`prototype.html`)</li>
+                        <li>Bộ phân giải Component Schema (`wireframe-viewer.html`)</li>
+                        <li>Báo cáo Audit màu tương phản WCAG 2.1 AA</li>
+                    </ul>
+                </div>
+                <a href="wireframe-viewer.html" class="sprint-btn">📐 Mở Dynamic Wireframe Viewer &rarr;</a>
+            </div>
+
+            <!-- Sprint 3 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 3: Chương 5</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>Kiến trúc & Cơ sở Dữ liệu 3NF</h3>
+                    <p class="sprint-desc">Kiến trúc Clean Architecture, lược đồ CSDL quan hệ 8 bảng chuẩn 3NF và hợp đồng OpenAPI 3.0.</p>
+                    <ul class="deliverables-list">
+                        <li>DDL CSDL chuẩn 3NF (`schema.sql` & `seeds.sql`)</li>
+                        <li>Sơ đồ quan hệ thực thể Mermaid ERD chi tiết</li>
+                        <li>Giao diện tương tác Swagger UI 15+ Endpoints</li>
+                    </ul>
+                </div>
+                <a href="swagger.html" class="sprint-btn">⚡ Mở Interactive Swagger UI &rarr;</a>
+            </div>
+
+            <!-- Sprint 4 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 4: Chương 6</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>AI Lập trình & Reactive Tracker</h3>
+                    <p class="sprint-desc">Thuật toán tính Readiness Score, bộ nhớ đệm In-Memory TTL Cache và theo dõi bài tập trực tiếp Canvas.</p>
+                    <ul class="deliverables-list">
+                        <li>Động cơ AI Recovery (`recovery_engine.py`)</li>
+                        <li>Bộ nhớ đệm siêu tốc TTL (`cache_manager.py`)</li>
+                        <li>Giao diện Reactive Workout Tracker & HRV Chart</li>
+                    </ul>
+                </div>
+                <a href="workout-tracker.html" class="sprint-btn">🏋️ Mở Workout Tracker Live &rarr;</a>
+            </div>
+
+            <!-- Sprint 5 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 5: Chương 7</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>Tái cấu trúc SOLID & AI Review Bot</h3>
+                    <p class="sprint-desc">Áp dụng Strategy Pattern & Factory, loại bỏ Code Smells và kịch bản Bot tự động review Pull Request.</p>
+                    <ul class="deliverables-list">
+                        <li>Module Strategy Pattern bài tập (`workout_strategies.py`)</li>
+                        <li>Bot AI Code Reviewer tự động GitHub Actions</li>
+                        <li>Báo cáo Clean Code Score 96/100 & SOLID</li>
+                    </ul>
+                </div>
+                <a href="ai-review-hub.html" class="sprint-btn">🤖 Mở AI Code Review Hub &rarr;</a>
+            </div>
+
+            <!-- Sprint 6 -->
+            <div class="sprint-card">
+                <div>
+                    <div class="sprint-header">
+                        <span class="sprint-tag">Sprint 6: Chương 8</span>
+                        <span class="status-pill">● COMPLETED</span>
+                    </div>
+                    <h3>Kiểm thử E2E & Ma trận Truy vết</h3>
+                    <p class="sprint-desc">Bộ kiểm thử tự động Playwright mô phỏng 4 hành trình vận động viên và Ma trận RTM phủ 20 FRs.</p>
+                    <ul class="deliverables-list">
+                        <li>Kịch bản Playwright E2E (`user_journey.spec.js`)</li>
+                        <li>Ma trận truy vết 20 FRs (`test_traceability_matrix.md`)</li>
+                        <li>Workflow CI tự động chạy test trên GitHub Actions</li>
+                    </ul>
+                </div>
+                <a href="e2e-automation.html" class="sprint-btn">🧪 Mở E2E Test Runner & RTM &rarr;</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fetch live readiness score from API
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const res = await fetch("/api/v1/recovery/today");
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById("score-val").textContent = data.readiness_score;
+                }
+            } catch (e) {
+                console.warn("Using offline fallback score", e);
+            }
+        });
+    </script>
 </body>
 </html>
