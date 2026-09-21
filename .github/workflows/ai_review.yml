@@ -1,0 +1,38 @@
+name: AI Code Reviewer & PR Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai_review:
+    name: Run AI Code Reviewer & SOLID Smell Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🤖 Execute AI Code Reviewer Bot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          echo "Comparing PR changes against base branch origin/${{ github.base_ref }}..."
+          git fetch origin ${{ github.base_ref }}
+          python scripts/ai_code_reviewer.py origin/${{ github.base_ref }}
