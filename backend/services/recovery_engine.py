@@ -1,22 +1,24 @@
 """
-NTRevo AI Recovery Engine & Adaptive Rules Service
+NTRevo AI Recovery Engine & Adaptive Rules Service (Refactored for SOLID)
 Author: Dev1-BackendLead (dev1.backendlead@ntrevo.io)
-Sprint: 4 - AI Lập trình (Code Generation & Completion)
-Standard: Clean Architecture Domain Service
+Sprint: 5 - Tái cấu trúc & Review Mã nguồn cùng AI
+Refactored: Composed with Single-Responsibility Calculators & Centralized Config Provider
 """
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Dict, Any
-import math
+from typing import List, Optional, Dict, Any
+
+from backend.config.scoring_config import ScoringConfigProvider, default_scoring_config
+from backend.services.calculators import HRVCalculator, SleepCalculator, SubjectiveFatigueCalculator
 
 @dataclass
 class BiometricInput:
     athlete_id: str
-    hrv_rmssd: float          # ms (e.g. 64.0)
-    sleep_hours: float        # hours (e.g. 7.8)
-    deep_sleep_ratio: float   # 0.0 - 1.0 (e.g. 0.22)
-    doms_score: int           # 1 - 10 (e.g. 3)
-    rpe_previous_day: float   # 1.0 - 10.0 (e.g. 7.5)
+    hrv_rmssd: float          # ms
+    sleep_hours: float        # hours
+    deep_sleep_ratio: float   # 0.0 - 1.0
+    doms_score: int           # 1 - 10
+    rpe_previous_day: float   # 1.0 - 10.0
     baseline_hrv_mean: float = 62.0
     baseline_hrv_std: float = 6.5
     sore_muscle_groups: Optional[List[str]] = None
@@ -34,110 +36,70 @@ class RecoveryScoreResult:
 
 class AIRecoveryEngine:
     """
-    Core AI scoring and adaptive volume engine synthesized through AI Pair Programming.
-    Applies multi-variable normalization and sports science recovery regression.
+    AI Recovery Engine refactored to adhere strictly to SOLID:
+    - SRP: Delegates normalization to specialized calculator classes.
+    - OCP: Configurable scoring parameters through Dependency Injection.
+    - DIP: Relies on abstractions rather than hardcoded heuristics.
     """
 
-    # Weights configuration
-    W_HRV = 0.40
-    W_SLEEP = 0.30
-    W_RPE = 0.15
-    W_DOMS = 0.15
-
-    def normalize_hrv(self, hrv_today: float, baseline_mean: float, baseline_std: float) -> float:
-        """
-        Normalizes HRV (rMSSD) based on athlete's rolling baseline using Z-score sigmoid.
-        """
-        if baseline_std <= 0:
-            baseline_std = 5.0
-        z_score = (hrv_today - baseline_mean) / baseline_std
-        # Center at 50, standard deviation scaling
-        score = 50.0 + (z_score * 20.0)
-        return max(0.0, min(100.0, round(score, 2)))
-
-    def normalize_sleep(self, sleep_hours: float, deep_sleep_ratio: float) -> float:
-        """
-        Synthesizes total sleep duration (70%) and deep sleep restorative ratio (30%).
-        Optimal target: 8.0 hours sleep, 20% deep sleep.
-        """
-        duration_score = (min(sleep_hours, 9.0) / 8.0) * 70.0
-        deep_score = (min(deep_sleep_ratio, 0.30) / 0.20) * 30.0
-        total_sleep_norm = duration_score + deep_score
-        return max(0.0, min(100.0, round(total_sleep_norm, 2)))
-
-    def normalize_rpe(self, rpe: float) -> float:
-        """
-        Inverse linear scale for previous day perceived exertion (Borg CR10).
-        RPE 1 = 100% fresh, RPE 10 = 0% fresh.
-        """
-        clamped_rpe = max(1.0, min(10.0, rpe))
-        norm = 100.0 - ((clamped_rpe - 1.0) * (100.0 / 9.0))
-        return max(0.0, min(100.0, round(norm, 2)))
-
-    def normalize_doms(self, doms: int) -> float:
-        """
-        Inverse linear scale for delayed onset muscle soreness (DOMS 1-10).
-        DOMS 1 = 100% (No soreness), DOMS 10 = 0% (Extreme pain).
-        """
-        clamped_doms = max(1, min(10, doms))
-        norm = 100.0 - ((clamped_doms - 1) * (100.0 / 9.0))
-        return max(0.0, min(100.0, round(norm, 2)))
+    def __init__(self, config_provider: ScoringConfigProvider = default_scoring_config):
+        self.config = config_provider
 
     def evaluate_readiness(self, data: BiometricInput) -> RecoveryScoreResult:
-        """
-        Calculates composite readiness score and evaluates adaptive training rules.
-        """
-        # 1. Component normalization
-        hrv_norm = self.normalize_hrv(data.hrv_rmssd, data.baseline_hrv_mean, data.baseline_hrv_std)
-        sleep_norm = self.normalize_sleep(data.sleep_hours, data.deep_sleep_ratio)
-        rpe_norm = self.normalize_rpe(data.rpe_previous_day)
-        doms_norm = self.normalize_doms(data.doms_score)
+        # 1. Component normalization via dedicated calculators (SRP)
+        hrv_norm = HRVCalculator.calculate(data.hrv_rmssd, data.baseline_hrv_mean, data.baseline_hrv_std)
+        sleep_norm = SleepCalculator.calculate(data.sleep_hours, data.deep_sleep_ratio)
+        rpe_norm = SubjectiveFatigueCalculator.normalize_rpe(data.rpe_previous_day)
+        doms_norm = SubjectiveFatigueCalculator.normalize_doms(data.doms_score)
 
-        # 2. Weighted synthesis
+        # 2. Weighted synthesis using Config Provider
+        w = self.config.weights
         composite_score = (
-            (self.W_HRV * hrv_norm) +
-            (self.W_SLEEP * sleep_norm) +
-            (self.W_RPE * rpe_norm) +
-            (self.W_DOMS * doms_norm)
+            (w.hrv * hrv_norm) +
+            (w.sleep * sleep_norm) +
+            (w.rpe * rpe_norm) +
+            (w.doms * doms_norm)
         )
         composite_score = round(composite_score, 1)
 
-        # 3. Check for Overtraining / Safety Overrides
+        # 3. Check Overtraining / Safety Overrides
         overtraining_alert = False
         override_reason = None
 
-        hrv_crash = data.hrv_rmssd < (data.baseline_hrv_mean - (2.5 * data.baseline_hrv_std))
-        extreme_doms = data.doms_score >= 9
+        t = self.config.thresholds
+        hrv_crash = data.hrv_rmssd < (data.baseline_hrv_mean - (t.hrv_crash_std_multiplier * data.baseline_hrv_std))
+        extreme_doms = data.doms_score >= t.extreme_doms_threshold
 
         if hrv_crash:
             overtraining_alert = True
-            override_reason = "HRV dropped >2.5 standard deviations below 14-day baseline. Autonomic nervous system fatigue detected."
+            override_reason = "HRV dropped >2.5 SD below 14-day baseline. Autonomic nervous system fatigue detected."
             composite_score = min(composite_score, 38.0)
         elif extreme_doms:
             overtraining_alert = True
-            override_reason = "Extreme localized DOMS (Level >= 9) reported. Musculoskeletal overload protection engaged."
+            override_reason = f"Extreme localized DOMS (Level >= {t.extreme_doms_threshold}) reported. Musculoskeletal overload protection engaged."
             composite_score = min(composite_score, 45.0)
 
-        # 4. Adaptive Rules Classification
-        if composite_score >= 80.0:
+        # 4. Adaptive Rules Classification using Multiplier Config
+        m = self.config.multipliers
+        if composite_score >= t.optimal_threshold:
             classification = "Optimal / Full Session"
-            vol_mult = 1.05
-            int_mult = 1.00
+            vol_mult = m.optimal_volume
+            int_mult = m.optimal_intensity
             recommendation = "Full training capacity. Recommended to pursue progressive overload or standard prescribed intensity."
-        elif composite_score >= 60.0:
+        elif composite_score >= t.modified_threshold:
             classification = "Modified Intensity"
-            vol_mult = 0.85
-            int_mult = 0.90
+            vol_mult = m.modified_volume
+            int_mult = m.modified_intensity
             recommendation = "Moderate recovery. Proceed with primary compound exercises, reduce accessory volume by 15%."
-        elif composite_score >= 40.0:
+        elif composite_score >= t.active_recovery_threshold:
             classification = "Active Recovery"
-            vol_mult = 0.50
-            int_mult = 0.60
+            vol_mult = m.active_volume
+            int_mult = m.active_intensity
             recommendation = "Suboptimal recovery. Pivot to Zone 2 cardio, mobility flow, and foam rolling."
         else:
             classification = "Complete Rest"
-            vol_mult = 0.00
-            int_mult = 0.00
+            vol_mult = m.rest_volume
+            int_mult = m.rest_intensity
             recommendation = "Exhaustion risk. Take complete passive rest, prioritize 8+ hours sleep and protein repletion."
 
         return RecoveryScoreResult(
