@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NTRevo Dynamic Wireframe Component Schema",
+  "description": "Declarative UI layout specification generated for Assessment and Workout Logging screens",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string", "default": "1.0.0" },
+    "screen_id": { "type": "string" },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["dark", "light"], "default": "dark" },
+        "bg_primary": { "type": "string", "default": "#09090B" },
+        "bg_card": { "type": "string", "default": "#18181B" },
+        "accent": { "type": "string", "default": "#FF4500" },
+        "border": { "type": "string", "default": "#27272A" }
+      }
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "badge": { "type": "string" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "layout_type": { "type": "string", "enum": ["grid-2", "grid-3", "card-stack", "metric-strip"] },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "type": { "type": "string", "enum": ["number-input", "range-slider", "stat-card", "button-group", "tag-selector", "action-button"] },
+                "label": { "type": "string" },
+                "field_name": { "type": "string" },
+                "min": { "type": "number" },
+                "max": { "type": "number" },
+                "step": { "type": "number" },
+                "default_value": {},
+                "unit": { "type": "string" },
+                "required": { "type": "boolean" },
+                "options": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "required": ["id", "type", "label", "field_name"]
+            }
+          }
+        },
+        "required": ["id", "title", "layout_type", "components"]
+      }
+    }
+  },
+  "required": ["version", "screen_id", "sections"]
+}

@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "screen_id": "screen-fitness-assessment",
+  "theme": {
+    "mode": "dark",
+    "bg_primary": "#09090B",
+    "bg_card": "#18181B",
+    "accent": "#FF4500",
+    "border": "#27272A"
+  },
+  "header": {
+    "title": "Đánh giá Thể lực & Sức bền Toàn diện",
+    "subtitle": "AI Biometric Baseline Generator - Thiết lập mốc khởi đầu tối ưu",
+    "badge": "FR-003 Assessment Module"
+  },
+  "sections": [
+    {
+      "id": "sec-cardio",
+      "title": "1. Sức bền Tim mạch & Hô hấp",
+      "layout_type": "grid-2",
+      "components": [
+        {
+          "id": "cmp-resting-hr",
+          "type": "number-input",
+          "label": "Nhịp tim lúc nghỉ (Resting HR)",
+          "field_name": "resting_heart_rate",
+          "min": 40,
+          "max": 120,
+          "step": 1,
+          "default_value": 60,
+          "unit": "bpm",
+          "required": true
+        },
+        {
+          "id": "cmp-vo2max",
+          "type": "number-input",
+          "label": "VO2max Ước tính",
+          "field_name": "estimated_vo2max",
+          "min": 20,
+          "max": 85,
+          "step": 0.5,
+          "default_value": 45.0,
+          "unit": "ml/kg/min",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "sec-strength",
+      "title": "2. Sức mạnh Cơ bắp Tối đa & Độ bền",
+      "layout_type": "grid-3",
+      "components": [
+        {
+          "id": "cmp-pushups",
+          "type": "number-input",
+          "label": "Chống đẩy tối đa (Push-ups Max Reps)",
+          "field_name": "pushups_count",
+          "min": 0,
+          "max": 150,
+          "step": 1,
+          "default_value": 35,
+          "unit": "reps",
+          "required": true
+        },
+        {
+          "id": "cmp-plank",
+          "type": "number-input",
+          "label": "Giữ Plank liên tục",
+          "field_name": "plank_duration_sec",
+          "min": 0,
+          "max": 600,
+          "step": 5,
+          "default_value": 120,
+          "unit": "giây",
+          "required": true
+        },
+        {
+          "id": "cmp-squat-1rm",
+          "type": "number-input",
+          "label": "Squat 1RM Ước tính",
+          "field_name": "squat_1rm_kg",
+          "min": 20,
+          "max": 350,
+          "step": 2.5,
+          "default_value": 100,
+          "unit": "kg",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "sec-subjective",
+      "title": "3. Cảm nhận Chủ quan & Mức độ Đau mỏi (DOMS)",
+      "layout_type": "grid-2",
+      "components": [
+        {
+          "id": "cmp-doms-slider",
+          "type": "range-slider",
+          "label": "Mức độ đau mỏi hiện tại (DOMS Scale 1-10)",
+          "field_name": "doms_level",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "default_value": 3,
+          "unit": "/10",
+          "required": true
+        },
+        {
+          "id": "cmp-soreness-focus",
+          "type": "tag-selector",
+          "label": "Vùng cơ nhạy cảm / Đau mỏi",
+          "field_name": "sore_muscle_groups",
+          "options": ["Đùi trước (Quads)", "Gân kheo (Hamstrings)", "Lưng dưới (Lower Back)", "Vai (Shoulders)", "Ngực (Chest)", "Không đau"],
+          "default_value": "Không đau",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
