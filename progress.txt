@@ -1,0 +1,69 @@
+# Ralph Progress Log
+Project: NTRevo - Adaptive Fitness Recovery MVP
+Branch: ralph/adaptive-fitness-recovery
+Started: 2026-09-15
+
+## Codebase Patterns
+- Data Models & Validation: Located in `frontend/js/models.js` with functional factories throwing explicit Vietnamese validation messages.
+- Storage Layer: Located in `frontend/js/storage.js` (`NTRevoStorage`), handles local persistence with in-memory fallback for headless Node testing.
+- Testing: Automated tests run with Node test runner (`node --test tests/*.test.js`).
+
+## Story Execution History
+
+## 2026-09-15 - US-001: Data models and storage schema for biometrics and recovery logs
+- What was implemented:
+  - Created `BiometricsLog`, `DomsLog`, and `ReadinessResult` data schemas with validation constraints.
+  - Implemented `NTRevoStorage` class with operations: save/load biometrics, DOMS, readiness results, history retrieval, and consecutive danger detection.
+  - Created test suite `tests/storage.test.js` with 4 comprehensive test cases covering models, boundaries, and persistence.
+- Files changed:
+  - `frontend/js/models.js`
+  - `frontend/js/storage.js`
+  - `tests/storage.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: `NTRevoStorage` uses date-based (`YYYY-MM-DD`) upserting so that updating morning biometrics on the same day replaces stale input cleanly.
+  - Gotchas encountered: `localStorage` is not available in Node.js test environment; using a clean `MemoryStorage` fallback allows fast headless test runs.
+  - Useful context: `checkConsecutiveDangerReadiness` is already provided and verified in the storage layer for story US-006.
+---
+
+## 2026-09-15 - US-002: Morning biometrics check-in form (FR-01)
+- What was implemented:
+  - Created Athletic Dark Mode UI in `frontend/index.html` with step navigation, glowing sliders, star ratings, and health guidance panels.
+  - Implemented `BiometricsCheckinForm` controller in `frontend/js/checkin.js` with client-side validation (sleep 0-14h, RHR 30-150 bpm, stress 1-5).
+  - Modernized `frontend/css/styles.css` with responsive layout, custom range slider thumbs, neon green/cyan accents, and WCAG AA contrast.
+  - Added unit tests in `tests/checkin.test.js` validating form boundaries, error reporting, and storage persistence. All 6 tests passing.
+- Files changed:
+  - `frontend/index.html`
+  - `frontend/css/styles.css`
+  - `frontend/js/checkin.js`
+  - `frontend/js/app.js`
+  - `tests/checkin.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: Decouple form validation and DOM events inside `BiometricsCheckinForm` class, enabling easy headless Node unit testing without requiring JSDOM.
+  - Gotchas encountered: Ensure slider labels and star states re-render when switching back to already-saved dates.
+  - Useful context: Form submission triggers `onSuccess` callback, which can seamlessly activate Tab 2 (DOMS map) in US-003.
+---
+
+## 2026-09-15 - US-003: Interactive DOMS muscle soreness map (FR-02)
+- What was implemented:
+  - Built interactive SVG anatomical body map covering anterior (mặt trước) and posterior (mặt sau) muscle groups (`chest`, `shoulders`, `biceps`, `abs`, `quads`, `upper_back`, `lower_back`, `triceps`, `glutes`, `hamstrings`, `calves`).
+  - Added pain severity scale modal (1-10) with dynamic heat-map colors (Yellow 1-3, Orange 4-6, Crimson 7-10).
+  - Integrated `DomsMapController` in `frontend/js/doms.js` with storage persistence and soreness chip list removal.
+  - Implemented responsive tab navigation in `frontend/js/app.js` linking Morning Check-in to DOMS map.
+  - Added unit test suite `tests/doms.test.js` validating color mapping, muscle definitions, and storage integration. All 9 total tests passing.
+- Files changed:
+  - `frontend/index.html`
+  - `frontend/css/styles.css`
+  - `frontend/js/doms.js`
+  - `frontend/js/app.js`
+  - `tests/doms.test.js`
+  - `prd.json`
+  - `scripts/ralph/prd.json`
+- **Learnings for future iterations:**
+  - Patterns discovered: Using SVG `data-muscle` attributes enables unified event binding across both SVG clicks and button list clicks.
+  - Gotchas encountered: `open_browser_url` tool encountered Playwright 404 driver download error on the local environment, so manual browser verification is available on `http://localhost:4173` or direct file open.
+  - Useful context: `DomsLog` now provides localized muscle list and pain ratings directly to `AI Readiness Score Engine` in story US-004.
+---

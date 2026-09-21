@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NTRevo - Master Athlete Command Center & AI Engine</title>
+    <meta name="description" content="NTRevo - Nền tảng phục hồi thể lực thích ứng thông minh. Đánh giá readiness score, giấc ngủ, nhịp tim và lập kế hoạch phục hồi cơ bắp cá nhân hóa.">
+    <title>NTRevo | Master Athlete Command Center & Adaptive Recovery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
     <style>
         :root {
             --bg-deep: #09090B;
@@ -22,83 +24,30 @@
             --status-fail: #EF4444;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-secondary);
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 15% 15%, rgba(255, 69, 0, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(0, 240, 255, 0.06) 0%, transparent 45%);
-            background-attachment: fixed;
-        }
-
-        header {
-            background: rgba(9, 9, 11, 0.95);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border-card);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 16px 28px;
-        }
-
-        .header-content {
-            max-width: 1300px;
-            margin: 0 auto;
+        .master-nav {
             display: flex;
-            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
             align-items: center;
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 800;
-            font-size: 20px;
-        }
-        .brand span { color: var(--accent-orange); }
-
-        .badge-portal {
-            font-size: 11px;
-            background: rgba(255, 69, 0, 0.15);
-            color: var(--accent-orange);
-            border: 1px solid rgba(255, 69, 0, 0.3);
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        nav { display: flex; gap: 8px; flex-wrap: wrap; }
-        nav a {
+        .master-nav a {
             color: var(--text-muted);
             text-decoration: none;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             transition: all 0.2s;
+            border: 1px solid transparent;
         }
-        nav a:hover, nav a.active {
+        .master-nav a:hover, .master-nav a.active {
             color: var(--text-primary);
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-card);
+            border-color: var(--border-card);
         }
-        nav a.active {
+        .master-nav a.active {
             color: var(--accent-orange);
             border-color: rgba(255, 69, 0, 0.3);
-        }
-
-        main {
-            max-width: 1300px;
-            margin: 32px auto;
-            padding: 0 24px 80px 24px;
         }
 
         /* Hero Banner */
@@ -107,13 +56,13 @@
             backdrop-filter: blur(14px);
             border: 1px solid var(--border-card);
             border-radius: 18px;
-            padding: 32px;
-            margin-bottom: 32px;
+            padding: 28px;
+            margin-bottom: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 24px;
+            gap: 20px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.4);
             position: relative;
             overflow: hidden;
@@ -127,15 +76,15 @@
         }
 
         .hero-text h1 {
-            font-size: 30px;
+            font-size: 26px;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             letter-spacing: -0.5px;
         }
         .hero-text p {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
             max-width: 600px;
             line-height: 1.6;
         }
@@ -146,11 +95,11 @@
             gap: 16px;
             background: rgba(9, 9, 11, 0.6);
             border: 1px solid var(--border-card);
-            padding: 16px 24px;
+            padding: 14px 22px;
             border-radius: 14px;
         }
         .hero-score-val {
-            font-size: 40px;
+            font-size: 38px;
             font-weight: 800;
             color: #FFFFFF;
             line-height: 1;
@@ -163,7 +112,7 @@
             letter-spacing: 0.5px;
         }
         .hero-score-status {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--status-pass);
             font-weight: 700;
             margin-top: 4px;
@@ -173,15 +122,15 @@
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
-            margin-bottom: 36px;
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: 14px;
-            padding: 20px;
+            padding: 18px;
             transition: transform 0.2s, border-color 0.2s;
         }
         .stat-card:hover {
@@ -189,30 +138,30 @@
             border-color: rgba(255, 69, 0, 0.4);
         }
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .stat-number {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
             color: var(--text-primary);
         }
         .stat-sub {
-            font-size: 12px;
+            font-size: 11px;
             color: #71717A;
             margin-top: 4px;
         }
 
         /* Sprint Matrix Grid */
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -220,15 +169,15 @@
 
         .sprint-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
         }
 
         .sprint-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
             border-radius: 16px;
-            padding: 24px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -246,13 +195,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .sprint-tag {
             font-size: 11px;
             font-weight: 700;
-            padding: 4px 10px;
+            padding: 3px 9px;
             border-radius: 20px;
             background: rgba(255, 69, 0, 0.12);
             color: var(--accent-orange);
@@ -268,27 +217,27 @@
         }
 
         .sprint-card h3 {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 800;
             color: #FFFFFF;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .sprint-desc {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 18px;
+            line-height: 1.5;
+            margin-bottom: 14px;
         }
 
         .deliverables-list {
             list-style: none;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-size: 12px;
             color: #D4D4D8;
         }
         .deliverables-list li {
-            padding: 4px 0;
+            padding: 3px 0;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -307,9 +256,9 @@
             background: #27272A;
             color: #FFFFFF;
             text-decoration: none;
-            padding: 10px 16px;
+            padding: 9px 14px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             transition: all 0.2s;
             border: 1px solid #3F3F46;
@@ -321,182 +270,547 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="brand">
-                NT<span>Revo</span>
-                <span class="badge-portal">Master Command Center</span>
-            </a>
-            <nav>
-                <a href="index.html" class="active">Dashboard</a>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="brand-wrapper">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <h1 class="brand-title">NTREVO</h1>
+                    <div class="brand-subtitle">Adaptive Fitness Recovery</div>
+                </div>
+            </div>
+            <nav class="master-nav" aria-label="Điều hướng chính">
+                <a href="index.html" class="active">Athlete Hub</a>
                 <a href="ai-generator.html">AI Generator</a>
                 <a href="prototype.html">Prototype (W2)</a>
                 <a href="wireframe-viewer.html">Wireframe (W2)</a>
-                <a href="swagger.html">OpenAPI (W3)</a>
+                <a href="swagger.html">Swagger (W3)</a>
                 <a href="workout-tracker.html">Tracker (W4)</a>
-                <a href="ai-review-hub.html">AI Review Hub (W5)</a>
-                <a href="e2e-automation.html">E2E Testing (W6)</a>
+                <a href="ai-review-hub.html">Review Hub (W5)</a>
+                <a href="e2e-automation.html">E2E Tests (W6)</a>
             </nav>
+            <div class="header-meta">
+                <div class="status-badge" id="system-status-badge">
+                    <span class="pulse-dot"></span>
+                    <span>AI Engine Active</span>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
-        <div class="hero-banner">
-            <div class="hero-text">
-                <h1>Chào mừng trở lại, Vận động viên!</h1>
-                <p>Hệ thống NTRevo Adaptive Fitness & Recovery Engine đang hoạt động ổn định. Toàn bộ chuỗi 6 Sprints đã được tích hợp đầy đủ giữa Dev 1 (Backend/AI Core) và Dev 2 (Frontend/QA).</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Workflow Tabs -->
+        <nav class="flow-tabs" aria-label="Luồng đánh giá phục hồi">
+            <button class="flow-tab active" id="tab-checkin" data-tab="checkin">
+                <span class="step-num">1</span>
+                <span>Chỉ Số Buổi Sáng (FR-01)</span>
+            </button>
+            <button class="flow-tab" id="tab-doms" data-tab="doms">
+                <span class="step-num">2</span>
+                <span>Bản Đồ Cơ Bắp DOMS (FR-02)</span>
+            </button>
+            <button class="flow-tab" id="tab-sprints" data-tab="sprints">
+                <span class="step-num">★</span>
+                <span>Trung Tâm Chỉ Huy 6 Sprints</span>
+            </button>
+        </nav>
+
+        <!-- VIEW 1: Morning Biometrics Check-in (FR-01) -->
+        <div class="dashboard-grid" id="view-checkin">
+            <!-- Left: Check-in Form Card -->
+            <section class="card" aria-labelledby="form-heading">
+                <h2 class="card-title" id="form-heading">
+                    <span>🌅 Ghi Nhận Dữ Liệu Thể Lực Buổi Sáng</span>
+                </h2>
+                <p class="card-desc">Nhập nhanh các thông số giấc ngủ và nhịp tim để AI tính toán mức độ phục hồi hệ thần kinh giao cảm.</p>
+
+                <!-- Feedback Alerts -->
+                <div id="error-alert" class="alert alert-danger hidden" role="alert"></div>
+                <div id="success-alert" class="alert alert-success hidden" role="status"></div>
+
+                <form id="biometrics-form" novalidate>
+                    <!-- Date Picker -->
+                    <div class="form-group">
+                        <label for="date-input" class="form-label">
+                            <span>Ngày ghi nhận</span>
+                        </label>
+                        <input type="date" id="date-input" class="form-input-number" required>
+                    </div>
+
+                    <!-- Sleep Duration Slider -->
+                    <div class="form-group">
+                        <label for="sleep-slider" class="form-label">
+                            <span>Thời gian ngủ đêm qua</span>
+                            <span class="metric-value-badge" id="sleep-val-label">7.5 giờ</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="sleep-slider" 
+                            class="range-slider" 
+                            min="0" 
+                            max="14" 
+                            step="0.5" 
+                            value="7.5"
+                            aria-label="Thời gian ngủ theo giờ"
+                        >
+                        <div class="slider-ticks">
+                            <span>0h</span>
+                            <span>7-8h (Chuẩn)</span>
+                            <span>14h</span>
+                        </div>
+                    </div>
+
+                    <!-- Sleep Quality Rating (Stars) -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Chất lượng giấc ngủ</span>
+                        </label>
+                        <div class="rating-stars" id="stars-container" role="radiogroup" aria-label="Đánh giá giấc ngủ từ 1 đến 5 sao">
+                            <button type="button" class="star-btn" data-val="1" aria-label="1 sao">&#9733;</button>
+                            <button type="button" class="star-btn" data-val="2" aria-label="2 sao">&#9733;</button>
+                            <button type="button" class="star-btn" data-val="3" aria-label="3 sao">&#9733;</button>
+                            <button type="button" class="star-btn active" data-val="4" aria-label="4 sao">&#9733;</button>
+                            <button type="button" class="star-btn" data-val="5" aria-label="5 sao">&#9733;</button>
+                        </div>
+                    </div>
+
+                    <!-- Resting Heart Rate (RHR) -->
+                    <div class="form-group">
+                        <label for="rhr-input" class="form-label">
+                            <span>Nhịp tim nghỉ ngơi (RHR)</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">Bình thường: 45 - 75 bpm</span>
+                        </label>
+                        <div class="input-with-unit">
+                            <input 
+                                type="number" 
+                                id="rhr-input" 
+                                class="form-input-number" 
+                                min="30" 
+                                max="130" 
+                                placeholder="60" 
+                                value="58"
+                                required
+                            >
+                            <span class="unit-badge">BPM</span>
+                        </div>
+                    </div>
+
+                    <!-- Perceived Stress / Fatigue Level -->
+                    <div class="form-group">
+                        <label for="stress-select" class="form-label">
+                            <span>Mức độ căng thẳng & áp lực cảm nhận</span>
+                        </label>
+                        <select id="stress-select" class="form-select">
+                            <option value="1">1 - Cực kỳ thoải mái, sảng khoái</option>
+                            <option value="2" selected>2 - Bình thường, hơi mỏi nhẹ</option>
+                            <option value="3">3 - Căng thẳng vừa phải</option>
+                            <option value="4">4 - Áp lực cao, thiếu tập trung</option>
+                            <option value="5">5 - Kiệt sức, quá tải</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit CTA -->
+                    <button type="submit" class="btn-primary" id="btn-submit-checkin">
+                        <span>Lưu Chỉ Số & Sang Chọn Bản Đồ Cơ</span>
+                        <span>➔</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right: Today's Biometric Summary Card -->
+            <aside class="card">
+                <h3 class="card-title" style="font-size: 1.2rem;">
+                    <span>📊 Tổng Quan Thể Lực Buổi Sáng</span>
+                </h3>
+                <p class="card-desc">Dữ liệu ghi nhận mới nhất được đồng bộ cục bộ để sẵn sàng cho thuật toán đánh giá.</p>
+
+                <div class="metric-card-inner">
+                    <div class="metric-label">Trạng Thái Ghi Nhận</div>
+                    <div class="metric-val" id="summary-status" style="font-size: 1.3rem; color: var(--neon-green);">
+                        Sẵn sàng ghi
+                    </div>
+                    <div class="field-hint" id="summary-timestamp">Chưa có bản ghi hôm nay</div>
+                </div>
+
+                <div class="metric-card-inner">
+                    <div class="metric-label">Điểm Sẵn Sàng (Live Engine)</div>
+                    <div class="metric-val" id="score-val" style="color: var(--neon-cyan);">82 / 100</div>
+                    <div class="field-hint">Tối ưu cho bài tập cường độ cao</div>
+                </div>
+
+                <div class="metric-card-inner">
+                    <div class="metric-label">Khuyến Nghị Nhanh</div>
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 4px;">
+                        Hệ thần kinh ổn định. Tiếp tục xác nhận bản đồ đau mỏi cơ bắp ở Bước 2 để điều chỉnh bài tập hôm nay.
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- VIEW 2: Interactive DOMS Muscle Soreness Map (FR-02) -->
+        <div class="dashboard-grid hidden" id="view-doms">
+            <!-- Left: Anatomical SVG Interactive Map -->
+            <section class="card" aria-labelledby="doms-heading">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h2 class="card-title" id="doms-heading">
+                            <span>🗺️ Bản Đồ Cảm Nhận Cơ Bắp (DOMS Map)</span>
+                        </h2>
+                        <p class="card-desc">Chạm hoặc nhấn vào nhóm cơ bị mỏi trên mô hình giải phẫu để chấm điểm đau nhức (1 - 10).</p>
+                    </div>
+                    <!-- View Mode Toggle -->
+                    <div class="muscle-view-toggle">
+                        <button type="button" class="btn-toggle active" id="btn-view-front">Mặt Trước</button>
+                        <button type="button" class="btn-toggle" id="btn-view-back">Mặt Sau</button>
+                    </div>
+                </div>
+
+                <!-- Anatomical SVG Wrapper -->
+                <div class="doms-map-container">
+                    <!-- Front View SVG -->
+                    <div id="svg-container-front" class="svg-map-wrapper">
+                        <svg viewBox="0 0 200 380" class="anatomical-svg" aria-label="Sơ đồ cơ bắp mặt trước">
+                            <!-- Head & Neck -->
+                            <ellipse cx="100" cy="28" rx="20" ry="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+                            <rect x="92" y="52" width="16" height="12" fill="rgba(255,255,255,0.06)"/>
+
+                            <!-- Shoulders -->
+                            <path class="muscle-path" data-muscle="shoulders" d="M 68,66 Q 80,60 92,62 L 90,82 Q 74,80 68,66 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="shoulders" d="M 132,66 Q 120,60 108,62 L 110,82 Q 126,80 132,66 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Chest (Ngực) -->
+                            <path class="muscle-path" data-muscle="chest" d="M 72,82 Q 100,78 128,82 L 126,114 Q 100,118 74,114 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Biceps -->
+                            <rect class="muscle-path" data-muscle="biceps" x="48" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <rect class="muscle-path" data-muscle="biceps" x="134" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Abs (Bụng) -->
+                            <path class="muscle-path" data-muscle="abs" d="M 80,118 L 120,118 L 116,168 L 84,168 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Quads (Đùi Trước) -->
+                            <path class="muscle-path" data-muscle="quads" d="M 74,180 L 96,182 L 94,254 L 72,250 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="quads" d="M 104,182 L 126,180 L 128,250 L 106,254 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Calves (Bắp Chân) -->
+                            <path class="muscle-path" data-muscle="calves" d="M 72,274 L 94,276 L 90,336 L 76,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="calves" d="M 106,276 L 128,274 L 124,336 L 110,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                        </svg>
+                    </div>
+
+                    <!-- Back View SVG -->
+                    <div id="svg-container-back" class="svg-map-wrapper hidden">
+                        <svg viewBox="0 0 200 380" class="anatomical-svg" aria-label="Sơ đồ cơ bắp mặt sau">
+                            <!-- Head & Neck -->
+                            <ellipse cx="100" cy="28" rx="20" ry="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/>
+                            <rect x="92" y="52" width="16" height="12" fill="rgba(255,255,255,0.06)"/>
+
+                            <!-- Traps / Upper Back (Lưng Trên) -->
+                            <path class="muscle-path" data-muscle="upper_back" d="M 72,66 L 128,66 L 122,118 L 78,118 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Triceps -->
+                            <rect class="muscle-path" data-muscle="triceps" x="46" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <rect class="muscle-path" data-muscle="triceps" x="136" y="92" width="18" height="38" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Lower Back -->
+                            <path class="muscle-path" data-muscle="lower_back" d="M 78,122 L 122,122 L 118,154 L 82,154 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Glutes -->
+                            <path class="muscle-path" data-muscle="glutes" d="M 72,158 Q 100,165 128,158 L 124,196 Q 100,204 76,196 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Hamstrings -->
+                            <path class="muscle-path" data-muscle="hamstrings" d="M 74,204 L 96,206 L 94,260 L 72,256 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="hamstrings" d="M 104,206 L 126,204 L 128,256 L 106,260 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+
+                            <!-- Calves (Back) -->
+                            <path class="muscle-path" data-muscle="calves" d="M 72,274 L 94,276 L 90,336 L 76,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                            <path class="muscle-path" data-muscle="calves" d="M 106,276 L 128,274 L 124,336 L 110,336 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Quick Button Selector Grid -->
+                <div class="muscle-grid-title">Chọn Nhanh Nhóm Cơ:</div>
+                <div class="muscle-quick-grid" id="muscle-quick-grid">
+                    <button type="button" class="muscle-quick-btn" data-muscle="chest">
+                        <span>Cơ Ngực</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="shoulders">
+                        <span>Cơ Vai</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="upper_back">
+                        <span>Lưng Trên / Xô</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="lower_back">
+                        <span>Lưng Dưới</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="biceps">
+                        <span>Tay Trước</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="triceps">
+                        <span>Tay Sau</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="abs">
+                        <span>Cơ Bụng</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="quads">
+                        <span>Đùi Trước</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="hamstrings">
+                        <span>Đùi Sau</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="glutes">
+                        <span>Cơ Mông</span><span class="pain-badge">+</span>
+                    </button>
+                    <button type="button" class="muscle-quick-btn" data-muscle="calves">
+                        <span>Bắp Chân</span><span class="pain-badge">+</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right: Selected Soreness List & Pain Scale Legend -->
+            <aside class="card">
+                <h3 class="card-title" style="font-size: 1.2rem;">
+                    <span>📋 Nhóm Cơ Đã Chọn Đau Nhức</span>
+                </h3>
+                <p class="card-desc">Danh sách các nhóm cơ đang mỏi cần AI lập giáo án giãn cơ phục hồi thích ứng.</p>
+
+                <!-- Soreness Chips List -->
+                <div class="soreness-chips-list" id="selected-soreness-list">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <!-- Pain Scale Legend -->
+                <div class="pain-legend">
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--amber-warning);"></span>
+                        <span>1-3: Đau nhẹ</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--orange-warning);"></span>
+                        <span>4-6: Đau vừa</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color-box" style="background: var(--crimson-danger);"></span>
+                        <span>7-10: Căng cứng</span>
+                    </div>
+                </div>
+
+                <!-- Save & Continue CTA -->
+                <button type="button" class="btn-primary" id="btn-save-doms">
+                    <span>Lưu Bản Đồ Cơ & Chạy AI Đánh Giá</span>
+                    <span>➔</span>
+                </button>
+            </aside>
+        </div>
+
+        <!-- VIEW 3: Master Sprints Command Center -->
+        <div class="hidden" id="view-sprints">
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <div class="hero-text">
+                    <h1>Trung Tâm Chỉ Huy Vận Động Viên & AI Engine</h1>
+                    <p>Hệ thống NTRevo Adaptive Fitness & Recovery Engine đang hoạt động ổn định. Toàn bộ chuỗi 6 Sprints đã được tích hợp đầy đủ giữa Dev 1 (Backend/AI Core) và Dev 2 (Frontend/QA).</p>
+                </div>
+                <div class="hero-score-badge">
+                    <div class="hero-score-val" id="hub-score-val">82</div>
+                    <div>
+                        <div class="hero-score-label">Readiness Score Hôm nay</div>
+                        <div class="hero-score-status">● Optimal / Full Capacity</div>
+                    </div>
+                </div>
             </div>
-            <div class="hero-score-badge">
-                <div class="hero-score-val" id="score-val">82</div>
-                <div>
-                    <div class="hero-score-label">Readiness Score Hôm nay</div>
-                    <div class="hero-score-status">● Optimal / Full Capacity</div>
+
+            <!-- Biometrics Stat Strip -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Độ biến thiên HRV (rMSSD)</div>
+                    <div class="stat-number">64.0 <span style="font-size:14px; color:#A1A1AA;">ms</span></div>
+                    <div class="stat-sub">+3.2ms so với baseline 14 ngày</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Thời lượng Giấc ngủ Đêm</div>
+                    <div class="stat-number">7h 48m</div>
+                    <div class="stat-sub">22% Tỷ lệ giấc ngủ sâu (Deep Sleep)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Chỉ số Thể lực FitnessScore™</div>
+                    <div class="stat-number">78.5 <span style="font-size:14px; color:#A1A1AA;">/100</span></div>
+                    <div class="stat-sub">Hạng thể lực: Advanced Fit</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Độ phủ Kiểm thử E2E QA</div>
+                    <div class="stat-number" style="color:#10B981;">100%</div>
+                    <div class="stat-sub">20/20 Yêu cầu chức năng đạt chuẩn</div>
+                </div>
+            </div>
+
+            <!-- Sprints Matrix Section -->
+            <div class="section-title">
+                <span>🗺️ Lộ trình Phát triển 6 Sprints Tích hợp (50% Dev 1 - 50% Dev 2)</span>
+                <span style="font-size:13px; color:#10B981; font-weight:600;">Trạng thái: 100% Hoàn thành Sprint 1 &rarr; 6</span>
+            </div>
+
+            <div class="sprint-grid">
+                <!-- Sprint 1 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 1: Chương 3</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>Yêu cầu & PRD Kỹ thuật</h3>
+                        <p class="sprint-desc">Đặc tả toàn diện PRD, công thức toán học FitnessScore™ và bộ khung REST API Router Skeleton.</p>
+                        <ul class="deliverables-list">
+                            <li>PRD Kỹ thuật tổng thể (`PRD_Technical_Spec.md`)</li>
+                            <li>Đặc tả thuật toán Recovery Engine (`06_...`)</li>
+                            <li>Khung Backend REST API Router (`app.py`)</li>
+                        </ul>
+                    </div>
+                    <a href="ai-generator.html" class="sprint-btn">🚀 Mở AI Prompt Generator &rarr;</a>
+                </div>
+
+                <!-- Sprint 2 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 2: Chương 4</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>Thiết kế UI/UX & Wireframe Động</h3>
+                        <p class="sprint-desc">Bản mẫu Prototype Glassmorphism WCAG 2.1 AA và trình render Server-Driven UI từ JSON Schema.</p>
+                        <ul class="deliverables-list">
+                            <li>Bản mẫu tương tác Glassmorphism (`prototype.html`)</li>
+                            <li>Bộ phân giải Component Schema (`wireframe-viewer.html`)</li>
+                            <li>Báo cáo Audit màu tương phản WCAG 2.1 AA</li>
+                        </ul>
+                    </div>
+                    <a href="wireframe-viewer.html" class="sprint-btn">📐 Mở Dynamic Wireframe Viewer &rarr;</a>
+                </div>
+
+                <!-- Sprint 3 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 3: Chương 5</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>Kiến trúc & Cơ sở Dữ liệu 3NF</h3>
+                        <p class="sprint-desc">Kiến trúc Clean Architecture, lược đồ CSDL quan hệ 8 bảng chuẩn 3NF và hợp đồng OpenAPI 3.0.</p>
+                        <ul class="deliverables-list">
+                            <li>DDL CSDL chuẩn 3NF (`schema.sql` & `seeds.sql`)</li>
+                            <li>Sơ đồ quan hệ thực thể Mermaid ERD chi tiết</li>
+                            <li>Giao diện tương tác Swagger UI 15+ Endpoints</li>
+                        </ul>
+                    </div>
+                    <a href="swagger.html" class="sprint-btn">⚡ Mở Interactive Swagger UI &rarr;</a>
+                </div>
+
+                <!-- Sprint 4 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 4: Chương 6</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>AI Lập trình & Reactive Tracker</h3>
+                        <p class="sprint-desc">Thuật toán tính Readiness Score, bộ nhớ đệm In-Memory TTL Cache và theo dõi bài tập trực tiếp Canvas.</p>
+                        <ul class="deliverables-list">
+                            <li>Động cơ AI Recovery (`recovery_engine.py`)</li>
+                            <li>Bộ nhớ đệm siêu tốc TTL (`cache_manager.py`)</li>
+                            <li>Giao diện Reactive Workout Tracker & HRV Chart</li>
+                        </ul>
+                    </div>
+                    <a href="workout-tracker.html" class="sprint-btn">🏋️ Mở Workout Tracker Live &rarr;</a>
+                </div>
+
+                <!-- Sprint 5 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 5: Chương 7</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>Tái cấu trúc SOLID & AI Review Bot</h3>
+                        <p class="sprint-desc">Áp dụng Strategy Pattern & Factory, loại bỏ Code Smells và kịch bản Bot tự động review Pull Request.</p>
+                        <ul class="deliverables-list">
+                            <li>Module Strategy Pattern bài tập (`workout_strategies.py`)</li>
+                            <li>Bot AI Code Reviewer tự động GitHub Actions</li>
+                            <li>Báo cáo Clean Code Score 96/100 & SOLID</li>
+                        </ul>
+                    </div>
+                    <a href="ai-review-hub.html" class="sprint-btn">🤖 Mở AI Code Review Hub &rarr;</a>
+                </div>
+
+                <!-- Sprint 6 -->
+                <div class="sprint-card">
+                    <div>
+                        <div class="sprint-header">
+                            <span class="sprint-tag">Sprint 6: Chương 8</span>
+                            <span class="status-pill">● COMPLETED</span>
+                        </div>
+                        <h3>Kiểm thử E2E & Ma trận Truy vết</h3>
+                        <p class="sprint-desc">Bộ kiểm thử tự động Playwright mô phỏng 4 hành trình vận động viên và Ma trận RTM phủ 20 FRs.</p>
+                        <ul class="deliverables-list">
+                            <li>Kịch bản Playwright E2E (`user_journey.spec.js`)</li>
+                            <li>Ma trận truy vết 20 FRs (`test_traceability_matrix.md`)</li>
+                            <li>Workflow CI tự động chạy test trên GitHub Actions</li>
+                        </ul>
+                    </div>
+                    <a href="e2e-automation.html" class="sprint-btn">🧪 Mở E2E Test Runner & RTM &rarr;</a>
                 </div>
             </div>
         </div>
 
-        <!-- Biometrics Stat Strip -->
-        <div class="stat-grid">
-            <div class="stat-card">
-                <div class="stat-label">Độ biến thiên HRV (rMSSD)</div>
-                <div class="stat-number">64.0 <span style="font-size:14px; color:#A1A1AA;">ms</span></div>
-                <div class="stat-sub">+3.2ms so với baseline 14 ngày</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Thời lượng Giấc ngủ Đêm</div>
-                <div class="stat-number">7h 48m</div>
-                <div class="stat-sub">22% Tỷ lệ giấc ngủ sâu (Deep Sleep)</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Chỉ số Thể lực FitnessScore™</div>
-                <div class="stat-number">78.5 <span style="font-size:14px; color:#A1A1AA;">/100</span></div>
-                <div class="stat-sub">Hạng thể lực: Advanced Fit</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Độ phủ Kiểm thử E2E QA</div>
-                <div class="stat-number" style="color:#10B981;">100%</div>
-                <div class="stat-sub">20/20 Yêu cầu chức năng đạt chuẩn</div>
-            </div>
-        </div>
-
-        <!-- Sprints Matrix Section -->
-        <div class="section-title">
-            <span>🗺️ Lộ trình Phát triển 6 Sprints Tích hợp (50% - 50%)</span>
-            <span style="font-size:13px; color:#10B981; font-weight:600;">Trạng thái: 100% Hoàn thành Sprint 1 &rarr; 6</span>
-        </div>
-
-        <div class="sprint-grid">
-            <!-- Sprint 1 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 1: Chương 3</span>
-                        <span class="status-pill">● COMPLETED</span>
-                    </div>
-                    <h3>Yêu cầu & PRD Kỹ thuật</h3>
-                    <p class="sprint-desc">Đặc tả toàn diện PRD, công thức toán học FitnessScore™ và bộ khung REST API Router Skeleton.</p>
-                    <ul class="deliverables-list">
-                        <li>PRD Kỹ thuật tổng thể (`PRD_Technical_Spec.md`)</li>
-                        <li>Đặc tả thuật toán Recovery Engine (`06_...`)</li>
-                        <li>Khung Backend REST API Router (`app.py`)</li>
-                    </ul>
+        <!-- DOMS Pain Severity Modal (US-003) -->
+        <div id="doms-modal" class="modal-backdrop hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-muscle-name">Đánh Giá Mức Độ Đau</h3>
+                    <button type="button" class="modal-close" aria-label="Đóng">&times;</button>
                 </div>
-                <a href="ai-generator.html" class="sprint-btn">🚀 Mở AI Prompt Generator &rarr;</a>
-            </div>
 
-            <!-- Sprint 2 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 2: Chương 4</span>
-                        <span class="status-pill">● COMPLETED</span>
+                <div class="form-group">
+                    <label for="pain-level-slider" class="form-label">
+                        <span>Thang đo độ đau nhức (DOMS)</span>
+                        <span class="metric-value-badge" id="modal-pain-val">5 / 10</span>
+                    </label>
+                    <input 
+                        type="range" 
+                        id="pain-level-slider" 
+                        class="range-slider" 
+                        min="1" 
+                        max="10" 
+                        step="1" 
+                        value="5"
+                    >
+                    <div class="slider-ticks">
+                        <span>1 (Nhẹ)</span>
+                        <span>5 (Vừa)</span>
+                        <span>10 (Dữ dội)</span>
                     </div>
-                    <h3>Thiết kế UI/UX & Wireframe Động</h3>
-                    <p class="sprint-desc">Bản mẫu Prototype Glassmorphism WCAG 2.1 AA và trình render Server-Driven UI từ JSON Schema.</p>
-                    <ul class="deliverables-list">
-                        <li>Bản mẫu tương tác Glassmorphism (`prototype.html`)</li>
-                        <li>Bộ phân giải Component Schema (`wireframe-viewer.html`)</li>
-                        <li>Báo cáo Audit màu tương phản WCAG 2.1 AA</li>
-                    </ul>
+                    <p class="field-hint" id="modal-pain-desc" style="color: var(--neon-cyan); margin-top: 10px;">
+                        Đau vừa - Hạn chế biên độ chuyển động
+                    </p>
                 </div>
-                <a href="wireframe-viewer.html" class="sprint-btn">📐 Mở Dynamic Wireframe Viewer &rarr;</a>
-            </div>
 
-            <!-- Sprint 3 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 3: Chương 5</span>
-                        <span class="status-pill">● COMPLETED</span>
-                    </div>
-                    <h3>Kiến trúc & Cơ sở Dữ liệu 3NF</h3>
-                    <p class="sprint-desc">Kiến trúc Clean Architecture, lược đồ CSDL quan hệ 8 bảng chuẩn 3NF và hợp đồng OpenAPI 3.0.</p>
-                    <ul class="deliverables-list">
-                        <li>DDL CSDL chuẩn 3NF (`schema.sql` & `seeds.sql`)</li>
-                        <li>Sơ đồ quan hệ thực thể Mermaid ERD chi tiết</li>
-                        <li>Giao diện tương tác Swagger UI 15+ Endpoints</li>
-                    </ul>
+                <div class="modal-actions">
+                    <button type="button" class="btn-primary" id="modal-save-muscle">Lưu Mức Đau</button>
+                    <button type="button" class="btn-danger-outline" id="modal-remove-muscle">Bỏ Chọn</button>
                 </div>
-                <a href="swagger.html" class="sprint-btn">⚡ Mở Interactive Swagger UI &rarr;</a>
-            </div>
-
-            <!-- Sprint 4 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 4: Chương 6</span>
-                        <span class="status-pill">● COMPLETED</span>
-                    </div>
-                    <h3>AI Lập trình & Reactive Tracker</h3>
-                    <p class="sprint-desc">Thuật toán tính Readiness Score, bộ nhớ đệm In-Memory TTL Cache và theo dõi bài tập trực tiếp Canvas.</p>
-                    <ul class="deliverables-list">
-                        <li>Động cơ AI Recovery (`recovery_engine.py`)</li>
-                        <li>Bộ nhớ đệm siêu tốc TTL (`cache_manager.py`)</li>
-                        <li>Giao diện Reactive Workout Tracker & HRV Chart</li>
-                    </ul>
-                </div>
-                <a href="workout-tracker.html" class="sprint-btn">🏋️ Mở Workout Tracker Live &rarr;</a>
-            </div>
-
-            <!-- Sprint 5 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 5: Chương 7</span>
-                        <span class="status-pill">● COMPLETED</span>
-                    </div>
-                    <h3>Tái cấu trúc SOLID & AI Review Bot</h3>
-                    <p class="sprint-desc">Áp dụng Strategy Pattern & Factory, loại bỏ Code Smells và kịch bản Bot tự động review Pull Request.</p>
-                    <ul class="deliverables-list">
-                        <li>Module Strategy Pattern bài tập (`workout_strategies.py`)</li>
-                        <li>Bot AI Code Reviewer tự động GitHub Actions</li>
-                        <li>Báo cáo Clean Code Score 96/100 & SOLID</li>
-                    </ul>
-                </div>
-                <a href="ai-review-hub.html" class="sprint-btn">🤖 Mở AI Code Review Hub &rarr;</a>
-            </div>
-
-            <!-- Sprint 6 -->
-            <div class="sprint-card">
-                <div>
-                    <div class="sprint-header">
-                        <span class="sprint-tag">Sprint 6: Chương 8</span>
-                        <span class="status-pill">● COMPLETED</span>
-                    </div>
-                    <h3>Kiểm thử E2E & Ma trận Truy vết</h3>
-                    <p class="sprint-desc">Bộ kiểm thử tự động Playwright mô phỏng 4 hành trình vận động viên và Ma trận RTM phủ 20 FRs.</p>
-                    <ul class="deliverables-list">
-                        <li>Kịch bản Playwright E2E (`user_journey.spec.js`)</li>
-                        <li>Ma trận truy vết 20 FRs (`test_traceability_matrix.md`)</li>
-                        <li>Workflow CI tự động chạy test trên GitHub Actions</li>
-                    </ul>
-                </div>
-                <a href="e2e-automation.html" class="sprint-btn">🧪 Mở E2E Test Runner & RTM &rarr;</a>
             </div>
         </div>
     </main>
 
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <p>© 2026 NTRevo Adaptive Fitness & Recovery Platform. Dành cho vận động viên và người tập thể hình chuyên nghiệp.</p>
+    </footer>
+
+    <!-- App Scripts -->
+    <script type="module" src="./js/app.js"></script>
     <script>
         // Fetch live readiness score from API
         document.addEventListener("DOMContentLoaded", async () => {
@@ -504,7 +818,11 @@
                 const res = await fetch("/api/v1/recovery/today");
                 if (res.ok) {
                     const data = await res.json();
-                    document.getElementById("score-val").textContent = data.readiness_score;
+                    const score = data.readiness_score || 82;
+                    const el1 = document.getElementById("score-val");
+                    const el2 = document.getElementById("hub-score-val");
+                    if (el1) el1.textContent = `${score} / 100`;
+                    if (el2) el2.textContent = score;
                 }
             } catch (e) {
                 console.warn("Using offline fallback score", e);
