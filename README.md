@@ -220,8 +220,8 @@ gantt
 
 | Vai trò | Phân công phụ trách | Trách nhiệm chính |
 | :--- | :--- | :--- |
-| **Dev 1: Backend & AI Core Lead** | `@nguyenluongthe` (hoặc Dev 1) | Kiến trúc hệ thống, Thuật toán AI Recovery Engine, Thiết kế RESTful API, CSDL Quan hệ & NFR Performance. |
-| **Dev 2: Frontend & QA/BA Specialist** | Đồng sự nhóm (Dev 2) | Thiết kế UI/UX Dashboard, Trực quan hóa dữ liệu sinh học, Đặc tả User Stories BDD Gherkin, E2E Automation Testing. |
+| **Dev 1: Backend & AI Core Lead** | `@nguyenluongthe`  | Kiến trúc hệ thống, Thuật toán AI Recovery Engine, Thiết kế RESTful API, CSDL Quan hệ & NFR Performance. |
+| **Dev 2: Frontend & QA/BA Specialist** | '@trandinhnhat'| Thiết kế UI/UX Dashboard, Trực quan hóa dữ liệu sinh học, Đặc tả User Stories BDD Gherkin, E2E Automation Testing. |
 
 ---
 
