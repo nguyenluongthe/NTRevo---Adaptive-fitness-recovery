@@ -39,13 +39,29 @@ INSERT INTO workouts (id, plan_id, user_id, scheduled_date, title, intensity_tar
 ('wk-004', 'pln-501', 'usr-101', '2026-08-14', 'Posterior Chain Deadlift & Pull Specialization', 'Standard', 'Strength', 'pending', NULL, '2026-08-13 12:00:00')
 ON CONFLICT (id) DO NOTHING;
 
--- 6. EXERCISE_SETS SEED
-INSERT INTO exercise_sets (id, workout_id, exercise_name, set_order, target_reps, actual_reps, target_weight_kg, actual_weight_kg, rpe_actual, created_at) VALUES
-('set-001', 'wk-001', 'Barbell Bench Press', 1, 8, 8, 80.0, 80.0, 7.5, '2026-08-10 18:05:00'),
-('set-002', 'wk-001', 'Barbell Bench Press', 2, 8, 8, 82.5, 82.5, 8.0, '2026-08-10 18:10:00'),
-('set-003', 'wk-001', 'Incline Dumbbell Press', 1, 10, 10, 28.0, 28.0, 8.5, '2026-08-10 18:22:00'),
-('set-004', 'wk-002', 'Barbell Back Squat', 1, 6, 6, 110.0, 110.0, 8.0, '2026-08-11 18:35:00'),
-('set-005', 'wk-002', 'Barbell Back Squat', 2, 6, 6, 112.5, 112.5, 8.5, '2026-08-11 18:42:00')
+-- 6. EXERCISES SEED (Dataset Sample D:\data\exercises-dataset)
+INSERT INTO exercises (id, name, category, body_part, equipment, target_muscle, image_url, gif_url, instructions_en, created_at) VALUES
+('0001', '3/4 sit-up', 'waist', 'waist', 'body weight', 'abs', 'images/0001-2gPfomN.jpg', 'videos/0001-2gPfomN.gif', 'Lie flat on your back with your knees bent and feet flat on the ground. Place hands behind head. Curl forward until torso is at a 45-degree angle.', '2026-08-01 10:00:00'),
+('0025', 'barbell bench press', 'chest', 'chest', 'barbell', 'pectorals', 'images/0025-bench.jpg', 'videos/0025-bench.gif', 'Lie on bench, grip barbell slightly wider than shoulder width. Lower bar to mid-chest, press upwards explosively to full extension.', '2026-08-01 10:00:00'),
+('0043', 'barbell back squat', 'upper legs', 'upper legs', 'barbell', 'quads', 'images/0043-squat.jpg', 'videos/0043-squat.gif', 'Rest barbell across upper traps. Descend by bending hips and knees until thighs are parallel to ground. Drive through midfoot back up.', '2026-08-01 10:00:00'),
+('0079', 'standing dumbbell lateral raise', 'shoulders', 'shoulders', 'dumbbell', 'delts', 'images/0079-raise.jpg', 'videos/0079-raise.gif', 'Stand with dumbbells at sides. Raise arms laterally until parallel to floor, maintaining slight elbow flexion. Lower slowly under control.', '2026-08-01 10:00:00')
+ON CONFLICT (id) DO NOTHING;
+
+-- 7. EXERCISE_SECONDARY_MUSCLES SEED
+INSERT INTO exercise_secondary_muscles (id, exercise_id, muscle_name) VALUES
+('sec-001', '0025', 'triceps'),
+('sec-002', '0025', 'anterior deltoids'),
+('sec-003', '0043', 'glutes'),
+('sec-004', '0043', 'hamstrings')
+ON CONFLICT (id) DO NOTHING;
+
+-- 8. EXERCISE_SETS SEED
+INSERT INTO exercise_sets (id, workout_id, exercise_id, exercise_name, set_order, target_reps, actual_reps, target_weight_kg, actual_weight_kg, rpe_actual, created_at) VALUES
+('set-001', 'wk-001', '0025', 'barbell bench press', 1, 8, 8, 80.0, 80.0, 7.5, '2026-08-10 18:05:00'),
+('set-002', 'wk-001', '0025', 'barbell bench press', 2, 8, 8, 82.5, 82.5, 8.0, '2026-08-10 18:10:00'),
+('set-003', 'wk-001', NULL, 'Incline Dumbbell Press', 1, 10, 10, 28.0, 28.0, 8.5, '2026-08-10 18:22:00'),
+('set-004', 'wk-002', '0043', 'barbell back squat', 1, 6, 6, 110.0, 110.0, 8.0, '2026-08-11 18:35:00'),
+('set-005', 'wk-002', '0043', 'barbell back squat', 2, 6, 6, 112.5, 112.5, 8.5, '2026-08-11 18:42:00')
 ON CONFLICT (id) DO NOTHING;
 
 -- 7. RECOVERY_LOGS SEED

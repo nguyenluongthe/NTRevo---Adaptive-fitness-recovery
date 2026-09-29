@@ -15,6 +15,17 @@ const HOST = '127.0.0.1';
 // In-Memory Cache Store for NFR-P02 sub-2s query latency
 const cacheStore = new Map();
 
+// Load Exercises Dataset (VKU Project Component)
+let exercisesList = [];
+try {
+    const exercisesPath = path.join(__dirname, 'data', 'exercises.json');
+    if (fs.existsSync(exercisesPath)) {
+        exercisesList = JSON.parse(fs.readFileSync(exercisesPath, 'utf8'));
+    }
+} catch (e) {
+    console.warn("Could not load exercises dataset:", e.message);
+}
+
 // In-Memory Biometric Log Store (initialized with mock data)
 let dailyBiometrics = {
     athlete_id: "usr-101",
@@ -112,6 +123,9 @@ const MIME_TYPES = {
     '.svg': 'image/svg+xml',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
     '.ico': 'image/x-icon',
     '.txt': 'text/plain; charset=utf-8'
 };
@@ -306,7 +320,88 @@ const server = http.createServer((req, res) => {
             });
         }
 
+        // GET /api/v1/exercises/categories
+        if (apiPath === '/exercises/categories' && req.method === 'GET') {
+            const bodyParts = [...new Set(exercisesList.map(e => e.body_part).filter(Boolean))].sort();
+            const targets = [...new Set(exercisesList.map(e => e.target).filter(Boolean))].sort();
+            const equipments = [...new Set(exercisesList.map(e => e.equipment).filter(Boolean))].sort();
+            return sendJSON(res, 200, {
+                total_exercises: exercisesList.length,
+                body_parts: bodyParts,
+                targets: targets,
+                equipments: equipments
+            });
+        }
+
+        // GET /api/v1/exercises or /api/v1/exercises/:id
+        if (apiPath.startsWith('/exercises') && req.method === 'GET') {
+            const sub = apiPath.replace('/exercises', '');
+            if (sub.startsWith('/') && sub.length > 1) {
+                const exId = sub.substring(1);
+                const found = exercisesList.find(e => e.id === exId);
+                if (found) {
+                    return sendJSON(res, 200, found);
+                } else {
+                    return sendJSON(res, 404, { error: "Exercise not found", id: exId });
+                }
+            }
+
+            // List with query params
+            const query = parsedUrl.query;
+            let filtered = [...exercisesList];
+
+            if (query.body_part) {
+                filtered = filtered.filter(e => e.body_part && e.body_part.toLowerCase() === query.body_part.toLowerCase());
+            }
+            if (query.target) {
+                filtered = filtered.filter(e => e.target && e.target.toLowerCase() === query.target.toLowerCase());
+            }
+            if (query.equipment) {
+                filtered = filtered.filter(e => e.equipment && e.equipment.toLowerCase().includes(query.equipment.toLowerCase()));
+            }
+            if (query.search) {
+                const s = query.search.toLowerCase();
+                filtered = filtered.filter(e => 
+                    (e.name && e.name.toLowerCase().includes(s)) || 
+                    (e.target && e.target.toLowerCase().includes(s)) ||
+                    (e.body_part && e.body_part.toLowerCase().includes(s))
+                );
+            }
+
+            const page = parseInt(query.page) || 1;
+            const limit = parseInt(query.limit) || 12;
+            const startIndex = (page - 1) * limit;
+            const paginated = filtered.slice(startIndex, startIndex + limit);
+
+            return sendJSON(res, 200, {
+                total: filtered.length,
+                page: page,
+                limit: limit,
+                total_pages: Math.ceil(filtered.length / limit),
+                data: paginated
+            });
+        }
+
         return sendJSON(res, 404, { error: "API Endpoint Not Found", path: pathname });
+    }
+
+    // ==========================================
+    // DATASET MEDIA SERVING (D:\data\exercises-dataset)
+    // ==========================================
+    if (pathname.startsWith('/dataset-media/')) {
+        const relPath = pathname.replace('/dataset-media/', '');
+        const mediaFilePath = path.join('D:\\data\\exercises-dataset', relPath);
+        if (fs.existsSync(mediaFilePath)) {
+            const ext = path.extname(mediaFilePath).toLowerCase();
+            const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+            res.writeHead(200, {
+                'Content-Type': contentType,
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=86400'
+            });
+            fs.createReadStream(mediaFilePath).pipe(res);
+            return;
+        }
     }
 
     // ==========================================

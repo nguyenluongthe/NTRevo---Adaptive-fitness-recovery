@@ -77,10 +77,34 @@ CREATE TABLE IF NOT EXISTS workouts (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
--- 6. EXERCISE_SETS TABLE (Fine-grained Exercise Logs within a Workout)
+-- 6. EXERCISES TABLE (Comprehensive Catalog from D:\data\exercises-dataset)
+CREATE TABLE IF NOT EXISTS exercises (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    body_part VARCHAR(50) NOT NULL CHECK (body_part IN ('waist', 'upper legs', 'back', 'lower legs', 'chest', 'upper arms', 'cardio', 'shoulders', 'lower arms', 'neck')),
+    equipment VARCHAR(80) NOT NULL,
+    target_muscle VARCHAR(80) NOT NULL,
+    image_url VARCHAR(255),
+    gif_url VARCHAR(255),
+    instructions_en TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. EXERCISE_SECONDARY_MUSCLES TABLE (3NF Synergist Muscle Decomposition)
+CREATE TABLE IF NOT EXISTS exercise_secondary_muscles (
+    id VARCHAR(36) PRIMARY KEY,
+    exercise_id VARCHAR(10) NOT NULL,
+    muscle_name VARCHAR(80) NOT NULL,
+    FOREIGN KEY (exercise_id) REFERENCES exercises (id) ON DELETE CASCADE,
+    UNIQUE (exercise_id, muscle_name)
+);
+
+-- 8. EXERCISE_SETS TABLE (Fine-grained Exercise Logs within a Workout)
 CREATE TABLE IF NOT EXISTS exercise_sets (
     id VARCHAR(36) PRIMARY KEY,
     workout_id VARCHAR(36) NOT NULL,
+    exercise_id VARCHAR(10),
     exercise_name VARCHAR(100) NOT NULL,
     set_order INTEGER NOT NULL CHECK (set_order >= 1),
     target_reps INTEGER NOT NULL CHECK (target_reps >= 1),
@@ -89,7 +113,8 @@ CREATE TABLE IF NOT EXISTS exercise_sets (
     actual_weight_kg REAL CHECK (actual_weight_kg >= 0.0),
     rpe_actual REAL CHECK (rpe_actual >= 1.0 AND rpe_actual <= 10.0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (workout_id) REFERENCES workouts (id) ON DELETE CASCADE
+    FOREIGN KEY (workout_id) REFERENCES workouts (id) ON DELETE CASCADE,
+    FOREIGN KEY (exercise_id) REFERENCES exercises (id) ON DELETE SET NULL
 );
 
 -- 7. RECOVERY_LOGS TABLE (Daily Biometrics & AI Readiness Inputs)
@@ -128,5 +153,7 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_fitness_assessments_user_date ON fitness_assessments(user_id, assessment_date);
 CREATE INDEX IF NOT EXISTS idx_workouts_plan_date ON workouts(plan_id, scheduled_date);
 CREATE INDEX IF NOT EXISTS idx_exercise_sets_workout ON exercise_sets(workout_id);
+CREATE INDEX IF NOT EXISTS idx_exercise_sets_exercise ON exercise_sets(exercise_id);
+CREATE INDEX IF NOT EXISTS idx_exercises_body_part_target ON exercises(body_part, target_muscle);
 CREATE INDEX IF NOT EXISTS idx_recovery_logs_user_date ON recovery_logs(user_id, log_date);
 CREATE INDEX IF NOT EXISTS idx_progress_metrics_user_date ON progress_metrics(user_id, recorded_date);

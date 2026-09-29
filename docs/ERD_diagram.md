@@ -19,6 +19,8 @@ erDiagram
 
     TRAINING_PLANS ||--o{ WORKOUTS : "contains (1:N)"
     WORKOUTS ||--o{ EXERCISE_SETS : "composed of (1:N)"
+    EXERCISES ||--o{ EXERCISE_SETS : "referenced by (1:N)"
+    EXERCISES ||--o{ EXERCISE_SECONDARY_MUSCLES : "has synergists (1:N)"
 
     USERS {
         string id PK "UUIDv4"
@@ -76,9 +78,29 @@ erDiagram
         timestamp completed_at
     }
 
+    EXERCISES {
+        string id PK "e.g. 0001 (Zero-padded)"
+        string name "Exercise title"
+        string category "Body part category"
+        string body_part "waist | chest | back | shoulders..."
+        string equipment "barbell | dumbbell | body weight..."
+        string target_muscle "Primary agonist muscle"
+        string image_url "Thumbnail image path"
+        string gif_url "Animated demo GIF path"
+        string instructions_en "Step-by-step cues"
+        timestamp created_at
+    }
+
+    EXERCISE_SECONDARY_MUSCLES {
+        string id PK "UUIDv4"
+        string exercise_id FK "References EXERCISES.id"
+        string muscle_name "Synergist muscle name"
+    }
+
     EXERCISE_SETS {
         string id PK "UUIDv4"
         string workout_id FK "References WORKOUTS.id"
+        string exercise_id FK "References EXERCISES.id (Nullable)"
         string exercise_name "Name of exercise"
         int set_order "1, 2, 3..."
         int target_reps

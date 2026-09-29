@@ -299,6 +299,116 @@ paths:
                 $ref: '#/components/schemas/WorkoutSummaryDTO'
 
   # -------------------------------------------------------------
+  # EXERCISE CATALOG (VKU Project Dataset Integration)
+  # -------------------------------------------------------------
+  /exercises:
+    get:
+      tags: [Exercise Catalog]
+      summary: Lấy danh sách bài tập từ thư viện (hỗ trợ phân trang và bộ lọc nhóm cơ)
+      parameters:
+        - name: body_part
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [waist, upper legs, back, lower legs, chest, upper arms, cardio, shoulders, lower arms, neck]
+        - name: target
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: equipment
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 12
+      responses:
+        '200':
+          description: Danh sách bài tập phân trang thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  total_pages:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExerciseDTO'
+
+  /exercises/categories:
+    get:
+      tags: [Exercise Catalog]
+      summary: Lấy danh mục tất cả body parts, target muscles và thiết bị hiện có
+      responses:
+        '200':
+          description: Danh mục phân loại bài tập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_exercises:
+                    type: integer
+                  body_parts:
+                    type: array
+                    items:
+                      type: string
+                  targets:
+                    type: array
+                    items:
+                      type: string
+                  equipments:
+                    type: array
+                    items:
+                      type: string
+
+  /exercises/{id}:
+    get:
+      tags: [Exercise Catalog]
+      summary: Lấy thông tin chi tiết và hướng dẫn kỹ thuật của một bài tập
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0001"
+      responses:
+        '200':
+          description: Chi tiết bài tập
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseDTO'
+        '404':
+          description: Không tìm thấy bài tập
+
+  # -------------------------------------------------------------
   # ANALYTICS & PREVENTION
   # -------------------------------------------------------------
   /analytics/hrv-trend:
@@ -638,3 +748,54 @@ components:
           type: string
           enum: [SAFE_ZONE, WARNING_ZONE, DANGER_INJURY_RISK]
           example: SAFE_ZONE
+
+    ExerciseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "0001"
+        name:
+          type: string
+          example: "3/4 sit-up"
+        category:
+          type: string
+          example: "waist"
+        body_part:
+          type: string
+          example: "waist"
+        equipment:
+          type: string
+          example: "body weight"
+        target:
+          type: string
+          example: "abs"
+        secondary_muscles:
+          type: array
+          items:
+            type: string
+          example: ["hip flexors", "lower back"]
+        image:
+          type: string
+          example: "images/0001-2gPfomN.jpg"
+        gif_url:
+          type: string
+          example: "videos/0001-2gPfomN.gif"
+        attribution:
+          type: string
+          example: "Exercises Dataset Public Domain / MIT"
+        instructions:
+          type: object
+          properties:
+            en:
+              type: string
+            vi:
+              type: string
+        instruction_steps:
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+

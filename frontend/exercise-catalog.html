@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VKU NTRevo - Thư viện bài tập thông minh hỗ trợ thích ứng thể lực cá nhân hóa. Đồ án môn học AI for Software Design & Architecture.">
+    <title>VKU NTRevo | Thư Viện Bài Tập Thích Ứng & Kiến Trúc Hệ Thống (Chapter 05)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        :root {
+            --bg-deep: #09090B;
+            --bg-card: rgba(24, 24, 27, 0.88);
+            --border-card: #27272A;
+            --accent-orange: #FF4500;
+            --accent-orange-glow: rgba(255, 69, 0, 0.25);
+            --accent-cyan: #00F0FF;
+            --accent-vku: #3B82F6;
+            --status-pass: #10B981;
+            --status-warn: #F59E0B;
+            --status-danger: #EF4444;
+            --text-primary: #FFFFFF;
+            --text-secondary: #E4E4E7;
+            --text-muted: #A1A1AA;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-secondary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255, 69, 0, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .master-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .master-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .master-nav a:hover, .master-nav a.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--border-card);
+        }
+        .master-nav a.active {
+            color: var(--accent-orange);
+            border-color: rgba(255, 69, 0, 0.35);
+        }
+
+        /* VKU Academic Banner */
+        .vku-academic-banner {
+            background: linear-gradient(135deg, rgba(24, 24, 27, 0.95), rgba(15, 23, 42, 0.9));
+            border: 1px solid #334155;
+            border-left: 5px solid var(--accent-orange);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .vku-academic-banner::after {
+            content: "VKU • CH05";
+            position: absolute;
+            right: 20px;
+            bottom: -15px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 70px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+        }
+        .vku-subhead {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #38BDF8;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .vku-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .vku-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 900px;
+            line-height: 1.6;
+        }
+        .vku-badge-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+        .vku-badge {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-card);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .vku-badge.highlight {
+            background: rgba(255, 69, 0, 0.15);
+            border-color: rgba(255, 69, 0, 0.3);
+            color: #FF7A45;
+        }
+
+        /* Filter & Controls */
+        .controls-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 260px;
+            background: rgba(9, 9, 11, 0.8);
+            border: 1px solid var(--border-card);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #FFF;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px var(--accent-orange-glow);
+        }
+        .select-filter {
+            background: rgba(9, 9, 11, 0.8);
+            border: 1px solid var(--border-card);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #FFF;
+            font-size: 14px;
+            min-width: 180px;
+        }
+        .btn-safe-filter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 10px;
+            color: #34D399;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-safe-filter:hover, .btn-safe-filter.active {
+            background: var(--status-pass);
+            color: #09090B;
+        }
+
+        .category-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-card);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .chip:hover, .chip.active {
+            background: var(--accent-orange);
+            color: #FFFFFF;
+            border-color: var(--accent-orange);
+        }
+
+        /* Exercise Cards Grid */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .exercise-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .exercise-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 69, 0, 0.4);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+        .exercise-card.danger-flag {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.08), var(--bg-card));
+        }
+
+        .card-media-box {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-media-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .exercise-card:hover .card-media-img {
+            transform: scale(1.04);
+        }
+        .media-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-card);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #00F0FF;
+            text-transform: uppercase;
+        }
+        .doms-alert-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(239, 68, 68, 0.9);
+            color: #FFF;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .exercise-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 8px;
+            text-transform: capitalize;
+        }
+        .card-meta-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .meta-pill {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .meta-pill.body-part {
+            background: rgba(255, 69, 0, 0.15);
+            color: #FF7A45;
+            border: 1px solid rgba(255, 69, 0, 0.3);
+        }
+        .meta-pill.target {
+            background: rgba(0, 240, 255, 0.12);
+            color: #00F0FF;
+            border: 1px solid rgba(0, 240, 255, 0.25);
+        }
+        .meta-pill.equipment {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+        }
+
+        .instruction-preview {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-card);
+            padding-top: 12px;
+        }
+        .btn-view-detail {
+            background: transparent;
+            border: 1px solid var(--border-card);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-view-detail:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .btn-add-workout {
+            background: var(--accent-orange);
+            color: #FFFFFF;
+            border: none;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-add-workout:hover {
+            background: #E03E00;
+        }
+
+        /* Architecture Inspector Accordion */
+        .arch-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 40px;
+        }
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .arch-card {
+            background: rgba(9, 9, 11, 0.7);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .arch-card-num {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .arch-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 8px;
+        }
+        .arch-card-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            background: #18181B;
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 680px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #FFF;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: var(--accent-orange);
+        }
+    </style>
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;">
+            <div class="brand-wrapper" style="display: flex; align-items: center; gap: 12px;">
+                <div class="brand-icon" style="font-size: 24px;">⚡</div>
+                <div>
+                    <h1 class="brand-title" style="font-size: 18px; margin: 0; font-weight: 800; color: #FFF;">NTREVO <span style="font-size: 11px; color: var(--accent-orange); font-weight: 700;">VKU EDITION</span></h1>
+                    <div class="brand-subtitle" style="font-size: 11px; color: var(--text-muted);">Adaptive Fitness & Recovery Platform</div>
+                </div>
+            </div>
+            <nav class="master-nav" aria-label="Điều hướng chính">
+                <a href="index.html">Athlete Hub</a>
+                <a href="exercise-catalog.html" class="active">VKU Exercises (Ch.5)</a>
+                <a href="ai-generator.html">AI Generator</a>
+                <a href="prototype.html">Prototype (W2)</a>
+                <a href="wireframe-viewer.html">Wireframe (W2)</a>
+                <a href="swagger.html">Swagger (W3)</a>
+                <a href="workout-tracker.html">Tracker (W4)</a>
+                <a href="ai-review-hub.html">Review Hub (W5)</a>
+                <a href="e2e-automation.html">E2E Tests (W6)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content" style="max-width: 1240px; margin: 0 auto; padding: 24px;">
+        <!-- VKU Academic Chapter 05 Banner -->
+        <div class="vku-academic-banner">
+            <div class="vku-subhead">
+                <span>🎓 ĐẠI HỌC ĐÀ NĂNG • TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN VÀ TRUYỀN THÔNG VIỆT - HÀN (VKU)</span>
+            </div>
+            <h2 class="vku-title">CHAPTER 05: AI for Software Design & Architecture</h2>
+            <p class="vku-desc">
+                Hệ thống Thư viện Bài tập Thích ứng (Exercise Catalog & Adaptive Recommendation) được thiết kế và hiện thực hóa dựa trên tập dữ liệu thực tế <strong>1,320+ bài tập thể lực</strong> (nguồn: <code>D:\data\exercises-dataset</code>). Tích hợp toàn diện 6 trụ cột kiến trúc phần mềm: Architecture Design, Patterns, UML, 3NF Database, OpenAPI 3.0 và Design Patterns.
+            </p>
+            <div class="vku-badge-row">
+                <span class="vku-badge highlight">🔥 Dataset: 137 Bài tập đại diện (10 Body Parts)</span>
+                <span class="vku-badge">🏛️ Clean Architecture</span>
+                <span class="vku-badge">🗄️ CSDL Chuẩn 3NF</span>
+                <span class="vku-badge">⚡ Sub-2s Cache Latency</span>
+                <span class="vku-badge">🛡️ AI DOMS Overload Prevention</span>
+            </div>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="controls-card">
+            <div class="search-row">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="🔍 Tìm bài tập theo tên, cơ đích (biceps, abs, quads), thiết bị..." 
+                />
+                <select id="equipmentFilter" class="select-filter" aria-label="Lọc theo thiết bị">
+                    <option value="">Tất cả thiết bị (All)</option>
+                    <option value="body weight">Body weight (Trọng lượng cơ thể)</option>
+                    <option value="dumbbell">Dumbbell (Tạ đơn)</option>
+                    <option value="barbell">Barbell (Tạ đòn)</option>
+                    <option value="cable">Cable (Máy kéo cáp)</option>
+                    <option value="leverage machine">Leverage machine</option>
+                </select>
+                <button type="button" class="btn-safe-filter" id="btnDomsSafety" title="Lọc bỏ các bài tập tác động vào nhóm cơ đang mỏi DOMS >= 7">
+                    <span>🛡️ AI DOMS Safe-Check</span>
+                    <span id="domsStatusTag" style="font-size: 11px; opacity: 0.8;">(Tắt)</span>
+                </button>
+            </div>
+
+            <!-- Body Part Filter Chips -->
+            <div class="category-chips" id="bodyPartChips">
+                <button class="chip active" data-part="">Tất cả vùng cơ (All)</button>
+                <button class="chip" data-part="chest">Ngực (Chest)</button>
+                <button class="chip" data-part="back">Lưng (Back)</button>
+                <button class="chip" data-part="shoulders">Vai (Shoulders)</button>
+                <button class="chip" data-part="upper arms">Tay trước & sau (Upper Arms)</button>
+                <button class="chip" data-part="upper legs">Đùi (Upper Legs)</button>
+                <button class="chip" data-part="waist">Bụng & Eo (Waist)</button>
+                <button class="chip" data-part="cardio">Tim mạch (Cardio)</button>
+                <button class="chip" data-part="lower arms">Cẳng tay (Lower Arms)</button>
+                <button class="chip" data-part="lower legs">Bắp chân (Lower Legs)</button>
+            </div>
+        </div>
+
+        <!-- Total counter & Live Feedback -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="font-size: 13px; color: var(--text-muted);">
+                Hiển thị <span id="countDisplay" style="color: var(--accent-orange); font-weight: 700;">0</span> bài tập tương thích
+            </div>
+            <div id="safetyNotice" style="font-size: 12px; color: var(--status-warn); display: none;">
+                ⚠️ Đang kích hoạt giao thức bảo vệ cơ bắp: Đã đánh dấu bài tập tác động vào vai/chân.
+            </div>
+        </div>
+
+        <!-- Exercise Cards Grid -->
+        <div class="exercise-grid" id="exerciseGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+                Đang nạp thư viện bài tập từ dataset D:\data\exercises-dataset...
+            </div>
+        </div>
+
+        <!-- Architecture & Software Design Inspector (CHAPTER 05 Mapping) -->
+        <section class="arch-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 800; color: #FFF; margin: 0;">
+                        🏛️ Ánh Xạ Kỹ Thuật Đồ Án: 6 Trụ Cột CHAPTER 05 (VKU Standards)
+                    </h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0 0;">
+                        Cách thức module Exercise Catalog tận dụng bộ dữ liệu để hoàn thành yêu cầu thiết kế kiến trúc phần mềm
+                    </p>
+                </div>
+                <a href="swagger.html" style="font-size: 12px; color: var(--accent-orange); text-decoration: none; font-weight: 600;">
+                    Mở Swagger OpenAPI 3.0 →
+                </a>
+            </div>
+
+            <div class="arch-grid">
+                <div class="arch-card">
+                    <div class="arch-card-num">01. Architecture Design</div>
+                    <div class="arch-card-title">Clean Architecture 4 Tầng</div>
+                    <div class="arch-card-desc">
+                        Entity <code>Exercise</code> nằm tại Domain Core, giao tiếp qua <code>IExerciseRepository</code> mà không phụ thuộc vào file JSON hay hệ quản trị PostgreSQL.
+                    </div>
+                </div>
+
+                <div class="arch-card">
+                    <div class="arch-card-num">02. Architecture Patterns</div>
+                    <div class="arch-card-title">Cache-Aside & Server-Driven UI</div>
+                    <div class="arch-card-desc">
+                        Tích hợp bộ nhớ đệm In-Memory/Redis lưu trữ chỉ mục nhóm cơ giúp tìm kiếm bài tập dưới <strong>5ms</strong> (thỏa mãn NFR-P02 sub-2s).
+                    </div>
+                </div>
+
+                <div class="arch-card">
+                    <div class="arch-card-num">03. UML & System Modeling</div>
+                    <div class="arch-card-title">Sequence & Class Diagrams</div>
+                    <div class="arch-card-desc">
+                        Sơ đồ tuần tự thể hiện tương tác khi AI phát hiện mỏi cơ DOMS &ge; 7: tự động loại bỏ bài tập squat/deadlift và thay bằng mobility/stretching.
+                    </div>
+                </div>
+
+                <div class="arch-card">
+                    <div class="arch-card-num">04. Database Design</div>
+                    <div class="arch-card-title">CSDL Quan Hệ Chuẩn 3NF</div>
+                    <div class="arch-card-desc">
+                        Bộ dữ liệu được chuẩn hóa thành 2 bảng <code>exercises</code> và <code>exercise_secondary_muscles</code>, loại bỏ hoàn toàn dư thừa dữ liệu (Transitive Dependency).
+                    </div>
+                </div>
+
+                <div class="arch-card">
+                    <div class="arch-card-num">05. API Design</div>
+                    <div class="arch-card-title">RESTful OpenAPI 3.0</div>
+                    <div class="arch-card-desc">
+                        Cung cấp các endpoint <code>GET /api/v1/exercises</code> hỗ trợ phân trang, lọc theo <code>body_part</code>, <code>target</code> và tìm kiếm toàn văn.
+                    </div>
+                </div>
+
+                <div class="arch-card">
+                    <div class="arch-card-num">06. Design Patterns</div>
+                    <div class="arch-card-title">Strategy & Specification Pattern</div>
+                    <div class="arch-card-desc">
+                        Áp dụng <code>SafeExerciseSpecification</code> để lọc bài tập an toàn và <code>WorkoutStrategyFactory</code> để sinh buổi tập theo hình thức Strength / HIIT / Mobility.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Exercise Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let allExercises = [];
+        let filteredExercises = [];
+        let activeBodyPart = '';
+        let domsSafetyActive = false;
+        // Simulated athlete DOMS fatigue from today's morning check-in
+        const SORE_MUSCLES = ['shoulders', 'upper legs'];
+
+        async function fetchExercises() {
+            try {
+                const res = await fetch('/api/v1/exercises?limit=150');
+                if (!res.ok) throw new Error('API Error');
+                const json = await res.json();
+                allExercises = json.data || [];
+                applyFilters();
+            } catch (err) {
+                console.error("Could not load exercises via API, attempting direct fallback:", err);
+                const grid = document.getElementById('exerciseGrid');
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #EF4444;">
+                        ❌ Không thể nạp bài tập từ API. Hãy kiểm tra máy chủ Node.js đang chạy tại <code>http://127.0.0.1:3000</code>.
+                    </div>
+                `;
+            }
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+            const equipment = document.getElementById('equipmentFilter').value.toLowerCase();
+
+            filteredExercises = allExercises.filter(ex => {
+                // Body Part filter
+                if (activeBodyPart && ex.body_part !== activeBodyPart) return false;
+                
+                // Equipment filter
+                if (equipment && (!ex.equipment || !ex.equipment.toLowerCase().includes(equipment))) return false;
+
+                // Search query
+                if (search) {
+                    const matchName = ex.name && ex.name.toLowerCase().includes(search);
+                    const matchTarget = ex.target && ex.target.toLowerCase().includes(search);
+                    const matchPart = ex.body_part && ex.body_part.toLowerCase().includes(search);
+                    if (!matchName && !matchTarget && !matchPart) return false;
+                }
+
+                return true;
+            });
+
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('exerciseGrid');
+            const countDisplay = document.getElementById('countDisplay');
+            countDisplay.innerText = filteredExercises.length;
+
+            if (filteredExercises.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px dashed var(--border-card);">
+                        Không tìm thấy bài tập phù hợp với tiêu chí lọc hiện tại.
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredExercises.map(ex => {
+                // Check if targets a sore muscle
+                const isSore = domsSafetyActive && SORE_MUSCLES.some(sm => 
+                    (ex.body_part && ex.body_part.toLowerCase().includes(sm)) ||
+                    (ex.target && ex.target.toLowerCase().includes(sm))
+                );
+
+                // Media URL
+                const gifPath = ex.gif_url ? `/dataset-media/${ex.gif_url}` : (ex.image ? `/dataset-media/${ex.image}` : '');
+                
+                // English or Vietnamese preview instruction
+                const instructionsEn = ex.instructions?.en || (Array.isArray(ex.instruction_steps?.en) ? ex.instruction_steps.en.join(' ') : 'No instruction available.');
+
+                return `
+                    <div class="exercise-card ${isSore ? 'danger-flag' : ''}">
+                        <div class="card-media-box">
+                            ${gifPath ? `
+                                <img 
+                                    src="${gifPath}" 
+                                    alt="${ex.name}" 
+                                    class="card-media-img" 
+                                    loading="lazy"
+                                    onerror="this.onerror=null; this.src='https://placehold.co/320x200/18181B/A1A1AA?text=${encodeURIComponent(ex.name)}';"
+                                />
+                            ` : `<div style="color:var(--text-muted);">No Media</div>`}
+                            <span class="media-badge">#${ex.id}</span>
+                            ${isSore ? `<span class="doms-alert-badge">⚠️ DOMS Quá Tải</span>` : ''}
+                        </div>
+                        <div class="card-body">
+                            <div class="exercise-name">${escapeHtml(ex.name)}</div>
+                            <div class="card-meta-row">
+                                <span class="meta-pill body-part">${escapeHtml(ex.body_part || 'Full')}</span>
+                                <span class="meta-pill target">🎯 ${escapeHtml(ex.target || 'N/A')}</span>
+                                <span class="meta-pill equipment">⚙️ ${escapeHtml(ex.equipment || 'Any')}</span>
+                            </div>
+                            <div class="instruction-preview">
+                                ${escapeHtml(instructionsEn)}
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn-view-detail" onclick="openDetail('${ex.id}')">
+                                    Chi tiết & Hướng dẫn
+                                </button>
+                                <button type="button" class="btn-add-workout" onclick="addToWorkout('${escapeHtml(ex.name)}')">
+                                    + Chọn bài
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openDetail(exId) {
+            const ex = allExercises.find(e => e.id === exId);
+            if (!ex) return;
+
+            const modalContent = document.getElementById('modalContent');
+            const gifPath = ex.gif_url ? `/dataset-media/${ex.gif_url}` : '';
+            const stepsEn = ex.instruction_steps?.en || [];
+
+            modalContent.innerHTML = `
+                <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                    ${gifPath ? `
+                        <img 
+                            src="${gifPath}" 
+                            alt="${ex.name}" 
+                            style="width: 220px; height: 220px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border-card);"
+                            onerror="this.onerror=null; this.style.display='none';"
+                        />
+                    ` : ''}
+                    <div style="flex: 1; min-width: 250px;">
+                        <span style="font-size: 11px; text-transform: uppercase; color: var(--accent-orange); font-weight: 700;">
+                            ID #${ex.id} • ${escapeHtml(ex.category)}
+                        </span>
+                        <h2 style="font-size: 22px; font-weight: 800; color: #FFF; text-transform: capitalize; margin: 4px 0 10px 0;">
+                            ${escapeHtml(ex.name)}
+                        </h2>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                            <span class="meta-pill body-part">${escapeHtml(ex.body_part)}</span>
+                            <span class="meta-pill target">🎯 Cơ đích: ${escapeHtml(ex.target)}</span>
+                            <span class="meta-pill equipment">⚙️ Thiết bị: ${escapeHtml(ex.equipment)}</span>
+                        </div>
+                        ${ex.secondary_muscles && ex.secondary_muscles.length ? `
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+                                <strong>Cơ bổ trợ:</strong> ${ex.secondary_muscles.map(escapeHtml).join(', ')}
+                            </div>
+                        ` : ''}
+                        <div style="font-size: 11px; color: #64748B;">
+                            Attribution: ${escapeHtml(ex.attribution || 'Exercises Dataset Public License')}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-card); padding-top: 16px;">
+                    <h3 style="font-size: 14px; font-weight: 700; color: #FFF; margin-bottom: 10px;">
+                        📋 Các bước thực hiện kỹ thuật chuẩn (Step-by-Step Instructions)
+                    </h3>
+                    ${stepsEn.length ? `
+                        <ol style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; padding-left: 20px;">
+                            ${stepsEn.map(s => `<li style="margin-bottom: 8px;">${escapeHtml(s)}</li>`).join('')}
+                        </ol>
+                    ` : `
+                        <p style="font-size: 13px; color: var(--text-muted);">${escapeHtml(ex.instructions?.en || 'Chưa có dữ liệu hướng dẫn chi tiết.')}</p>
+                    `}
+                </div>
+
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-view-detail" onclick="closeModal()">Đóng</button>
+                    <button type="button" class="btn-add-workout" onclick="addToWorkout('${escapeHtml(ex.name)}'); closeModal();">
+                        + Thêm vào buổi tập hôm nay
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function addToWorkout(name) {
+            alert(`✅ Đã thêm bài tập "${name}" vào lịch tập thích ứng hôm nay!\nDữ liệu đã được chuyển sang module Workout Tracker (W4).`);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('equipmentFilter').addEventListener('change', applyFilters);
+
+        document.getElementById('bodyPartChips').addEventListener('click', (e) => {
+            if (e.target.classList.contains('chip')) {
+                document.querySelectorAll('#bodyPartChips .chip').forEach(c => c.classList.remove('active'));
+                e.target.classList.add('active');
+                activeBodyPart = e.target.getAttribute('data-part');
+                applyFilters();
+            }
+        });
+
+        document.getElementById('btnDomsSafety').addEventListener('click', () => {
+            domsSafetyActive = !domsSafetyActive;
+            const btn = document.getElementById('btnDomsSafety');
+            const statusTag = document.getElementById('domsStatusTag');
+            const notice = document.getElementById('safetyNotice');
+
+            if (domsSafetyActive) {
+                btn.classList.add('active');
+                statusTag.innerText = '(BẬT: Vai & Đùi)';
+                notice.style.display = 'block';
+            } else {
+                btn.classList.remove('active');
+                statusTag.innerText = '(Tắt)';
+                notice.style.display = 'none';
+            }
+            renderGrid();
+        });
+
+        // Close modal on click outside
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detailModal')) {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        fetchExercises();
+    </script>
+</body>
+</html>
