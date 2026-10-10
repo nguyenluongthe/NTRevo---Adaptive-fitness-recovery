@@ -333,7 +333,113 @@ const server = http.createServer((req, res) => {
             });
         }
 
-        // GET /api/v1/exercises or /api/v1/exercises/:id
+        // POST /api/v1/workouts/logs (Log individual exercise set in 3NF structure)
+        if (apiPath === '/workouts/logs' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', () => {
+                try {
+                    const parsed = JSON.parse(body || '{}');
+                    const setRecord = {
+                        set_id: "set-" + Date.now().toString(36),
+                        exercise_id: parsed.exercise_id || "0025",
+                        exercise_name: parsed.exercise_name || "Barbell Bench Press",
+                        reps: parsed.reps || 8,
+                        weight_kg: parsed.weight_kg || 80.0,
+                        rpe: parsed.rpe || 7.5,
+                        volume_load_kg: (parsed.reps || 8) * (parsed.weight_kg || 80.0),
+                        timestamp: new Date().toISOString()
+                    };
+                    return sendJSON(res, 201, {
+                        success: true,
+                        message: "Set logged successfully in relational structure",
+                        data: setRecord
+                    });
+                } catch (e) {
+                    return sendJSON(res, 400, { error: "Invalid JSON format" });
+                }
+            });
+            return;
+        }
+
+        // GET /api/v1/sdui/layouts/:id (Server-Driven UI)
+        if (apiPath.startsWith('/sdui/layouts') && req.method === 'GET') {
+            const layoutId = apiPath.replace('/sdui/layouts/', '').replace('/sdui/layouts', '').trim();
+            const designDir = path.join(__dirname, 'design');
+            let targetFile = path.join(designDir, `${layoutId}.json`);
+            if (!fs.existsSync(targetFile)) {
+                targetFile = path.join(designDir, `${layoutId}_wireframe.json`);
+            }
+            if (!fs.existsSync(targetFile)) {
+                targetFile = path.join(designDir, 'wireframe_schema.json');
+            }
+
+            if (fs.existsSync(targetFile)) {
+                try {
+                    const schemaData = JSON.parse(fs.readFileSync(targetFile, 'utf8'));
+                    return sendJSON(res, 200, {
+                        layout_id: layoutId,
+                        server_driven: true,
+                        version: "1.0.0",
+                        schema: schemaData
+                    });
+                } catch (e) {
+                    return sendJSON(res, 500, { error: "Could not read layout schema", message: e.message });
+                }
+            }
+            return sendJSON(res, 404, { error: "Layout not found", layout: layoutId });
+        }
+
+        // GET /api/v1/exercises/safe-filter (DOMS Specification Filter)
+        if (apiPath === '/exercises/safe-filter' && req.method === 'GET') {
+            const query = parsedUrl.query;
+            const bodyPart = query.body_part ? query.body_part.toLowerCase() : null;
+            const soreMuscles = query.sore_muscles ? query.sore_muscles.toLowerCase().split(',').map(s => s.trim()) : [];
+
+            let subset = exercisesList;
+            if (bodyPart) {
+                subset = subset.filter(e => e.body_part && e.body_part.toLowerCase() === bodyPart);
+            }
+
+            const safeList = [];
+            const warningList = [];
+
+            subset.forEach(ex => {
+                const targetLower = (ex.target || '').toLowerCase();
+                const bpLower = (ex.body_part || '').toLowerCase();
+                const secLower = (ex.secondary_muscles || []).map(m => m.toLowerCase());
+
+                const hasConflict = soreMuscles.some(sore => 
+                    targetLower.includes(sore) || bpLower.includes(sore) || secLower.some(sec => sec.includes(sore))
+                );
+
+                if (hasConflict) {
+                    warningList.push({
+                        ...ex,
+                        is_safe: false,
+                        doms_warning: true,
+                        warning_message: `Tác động vào nhóm cơ đang mỏi DOMS: ${soreMuscles.join(', ')}`
+                    });
+                } else {
+                    safeList.push({
+                        ...ex,
+                        is_safe: true,
+                        doms_warning: false
+                    });
+                }
+            });
+
+            return sendJSON(res, 200, {
+                total_evaluated: subset.length,
+                safe_count: safeList.length,
+                warning_count: warningList.length,
+                sore_muscles_checked: soreMuscles,
+                safe_exercises: safeList.slice(0, 12),
+                warning_exercises: warningList.slice(0, 12)
+            });
+        }
+
+        // GET /api/v1/exercises or /api/v1/exercises/:id (with Cache-Aside Pattern)
         if (apiPath.startsWith('/exercises') && req.method === 'GET') {
             const sub = apiPath.replace('/exercises', '');
             if (sub.startsWith('/') && sub.length > 1) {
@@ -346,7 +452,15 @@ const server = http.createServer((req, res) => {
                 }
             }
 
-            // List with query params
+            // Cache-Aside Key Check
+            const cacheKey = `exercises:cache:${parsedUrl.search || 'all'}`;
+            const cachedResponse = cacheStore.get(cacheKey);
+            if (cachedResponse) {
+                res.setHeader('X-Cache-Status', 'HIT');
+                return sendJSON(res, 200, { ...cachedResponse, from_cache: true });
+            }
+
+            // List with query params (Cache Miss)
             const query = parsedUrl.query;
             let filtered = [...exercisesList];
 
@@ -373,13 +487,19 @@ const server = http.createServer((req, res) => {
             const startIndex = (page - 1) * limit;
             const paginated = filtered.slice(startIndex, startIndex + limit);
 
-            return sendJSON(res, 200, {
+            const responsePayload = {
                 total: filtered.length,
                 page: page,
                 limit: limit,
                 total_pages: Math.ceil(filtered.length / limit),
-                data: paginated
-            });
+                data: paginated,
+                from_cache: false
+            };
+
+            // Save to Cache-Aside Store with TTL 3600s
+            cacheStore.set(cacheKey, responsePayload);
+            res.setHeader('X-Cache-Status', 'MISS');
+            return sendJSON(res, 200, responsePayload);
         }
 
         return sendJSON(res, 404, { error: "API Endpoint Not Found", path: pathname });

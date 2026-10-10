@@ -1,0 +1,22 @@
+{
+  "name": "ntrevo-adaptive-fitness",
+  "version": "1.0.0",
+  "description": "NTRevo - Adaptive Fitness & Recovery Platform (VKU Industrial AI Project)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/test_chapter_05_architecture.js",
+    "test:arch": "node tests/test_chapter_05_architecture.js",
+    "test:db": "node scripts/verify_database.js"
+  },
+  "keywords": [
+    "fitness",
+    "recovery",
+    "clean-architecture",
+    "vku",
+    "ai",
+    "openapi"
+  ],
+  "author": "NTRevo Engineering Team",
+  "license": "MIT"
+}

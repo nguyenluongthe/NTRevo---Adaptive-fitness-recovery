@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS exercise_sets (
     FOREIGN KEY (exercise_id) REFERENCES exercises (id) ON DELETE SET NULL
 );
 
--- 7. RECOVERY_LOGS TABLE (Daily Biometrics & AI Readiness Inputs)
+-- 9. RECOVERY_LOGS TABLE (Daily Biometrics & AI Readiness Inputs)
 CREATE TABLE IF NOT EXISTS recovery_logs (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS recovery_logs (
     UNIQUE (user_id, log_date)
 );
 
--- 8. PROGRESS_METRICS TABLE (Longitudinal Tracking of Biomarkers & Volume)
+-- 10. PROGRESS_METRICS TABLE (Longitudinal Tracking of Biomarkers & Volume)
 CREATE TABLE IF NOT EXISTS progress_metrics (
     id VARCHAR(36) PRIMARY KEY,
     user_id VARCHAR(36) NOT NULL,
