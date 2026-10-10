@@ -28,6 +28,10 @@ tags:
     description: Thuật toán tính điểm sẵn sàng và kê đơn phục hồi thích nghi
   - name: Workouts
     description: Quản lý lịch tập, ghi nhận tải lượng (weight, reps, RPE) theo thời gian thực
+  - name: Exercise Catalog
+    description: Tra cứu thư viện bài tập, cơ đích, thiết bị và lọc an toàn chấn thương DOMS
+  - name: Server-Driven UI
+    description: Cung cấp layout JSON Schema động cho client renderer
   - name: Analytics & Prevention
     description: Báo cáo xu hướng HRV 7 ngày và cảnh báo chỉ số nguy cơ quá tải (ACWR)
 
@@ -407,6 +411,68 @@ paths:
                 $ref: '#/components/schemas/ExerciseDTO'
         '404':
           description: Không tìm thấy bài tập
+
+  /exercises/safe-filter:
+    get:
+      tags: [Exercise Catalog]
+      summary: Lọc bài tập an toàn theo chỉ số đau mỏi cơ DOMS (Specification Pattern)
+      parameters:
+        - name: body_part
+          in: query
+          required: false
+          schema:
+            type: string
+            example: shoulders
+        - name: sore_muscles
+          in: query
+          required: false
+          schema:
+            type: string
+            example: shoulders,quads
+      responses:
+        '200':
+          description: Kết quả phân loại bài tập an toàn và cảnh báo chấn thương
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_evaluated:
+                    type: integer
+                  safe_count:
+                    type: integer
+                  warning_count:
+                    type: integer
+                  safe_exercises:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExerciseDTO'
+                  warning_exercises:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExerciseDTO'
+
+  /sdui/layouts/{layout_id}:
+    get:
+      tags: [Server-Driven UI]
+      summary: Lấy cấu trúc layout JSON Schema động phục vụ Server-Driven UI
+      parameters:
+        - name: layout_id
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [assessment, wireframe_schema]
+            example: assessment
+      responses:
+        '200':
+          description: Layout schema trả về thành công
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Không tìm thấy layout schema
 
   # -------------------------------------------------------------
   # ANALYTICS & PREVENTION

@@ -11,6 +11,7 @@ from routes.auth_routes import handle_auth_routes
 from routes.assessment_routes import handle_assessment_routes
 from routes.recovery_routes import handle_recovery_routes
 from routes.workout_routes import handle_workout_routes
+from routes.exercise_routes import handle_exercise_routes, handle_sdui_routes
 
 API_PREFIX = "/api/v1"
 PORT = 8000
@@ -45,7 +46,7 @@ class NTRevoRequestHandler(BaseHTTPRequestHandler):
                 "service": "NTRevo Backend API Engine",
                 "version": "1.0.0",
                 "environment": "development",
-                "modules": ["auth", "assessment", "recovery", "workouts"]
+                "modules": ["auth", "assessment", "recovery", "workouts", "exercises", "sdui"]
             })
             return
 
@@ -61,6 +62,12 @@ class NTRevoRequestHandler(BaseHTTPRequestHandler):
             self._send_json_response(status, res)
         elif path.startswith(f"{API_PREFIX}/workouts"):
             status, res = handle_workout_routes("GET", path, query, None)
+            self._send_json_response(status, res)
+        elif path.startswith(f"{API_PREFIX}/exercises"):
+            status, res = handle_exercise_routes("GET", path, query, None)
+            self._send_json_response(status, res)
+        elif path.startswith(f"{API_PREFIX}/sdui"):
+            status, res = handle_sdui_routes("GET", path, query, None)
             self._send_json_response(status, res)
         else:
             self._send_json_response(404, {"error": "Endpoint not found", "path": path})
